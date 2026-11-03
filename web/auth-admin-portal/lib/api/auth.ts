@@ -24,12 +24,14 @@ export const authApi = {
     apiFetch<AuthTokenResponse>("/api/v1/auth/login", {
       method: "POST",
       body: request,
+      token: null,
     }),
 
   refresh: (request: RefreshTokenRequest): Promise<AuthTokenResponse> =>
     apiFetch<AuthTokenResponse>("/api/v1/auth/refresh", {
       method: "POST",
       body: request,
+      token: null,
     }),
 
   logout: (request?: LogoutRequest, token?: string): Promise<MessageResponse> =>
@@ -45,6 +47,7 @@ export const authApi = {
     apiFetch<MessageResponse>("/api/v1/auth/activate-account/request", {
       method: "POST",
       body: request,
+      token: null,
     }),
 
   confirmActivation: (
@@ -53,21 +56,24 @@ export const authApi = {
     apiFetch<MessageResponse>("/api/v1/auth/activate-account/confirm", {
       method: "POST",
       body: request,
+      token: null,
     }),
 
   forgotPassword: (request: ForgotPasswordRequest): Promise<MessageResponse> =>
     apiFetch<MessageResponse>("/api/v1/auth/forgot-password", {
       method: "POST",
       body: request,
+      token: null,
     }),
 
   resetPassword: (request: ResetPasswordRequest): Promise<MessageResponse> =>
     apiFetch<MessageResponse>("/api/v1/auth/reset-password", {
       method: "POST",
       body: request,
+      token: null,
     }),
 
-  getMe: (token: string): Promise<UserProfileSummaryDto> =>
+  getMe: (token?: string): Promise<UserProfileSummaryDto> =>
     apiFetch<UserProfileSummaryDto>("/api/v1/auth/me", {
       method: "GET",
       token,
@@ -75,7 +81,7 @@ export const authApi = {
 
   changePassword: (
     request: ChangePasswordRequest,
-    token: string
+    token?: string
   ): Promise<MessageResponse> =>
     apiFetch<MessageResponse>("/api/v1/auth/change-password", {
       method: "POST",

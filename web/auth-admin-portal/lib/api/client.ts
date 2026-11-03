@@ -1,6 +1,7 @@
 import "server-only";
 
 import { headers } from "next/headers";
+import { getServerAccessToken } from "./auth-token";
 import { ApiException } from "./errors";
 import { ProblemDetails } from "./types";
 
@@ -55,9 +56,11 @@ export async function apiFetch<T>(
     requestHeaders.set(key, value);
   }
 
-  // Tambahkan Bearer token jika disediakan
-  if (options.token) {
-    requestHeaders.set("Authorization", `Bearer ${options.token}`);
+  // Tambahkan Bearer token jika disediakan atau dari cookie sesi server
+  const bearerToken =
+    options.token !== undefined ? options.token : await getServerAccessToken();
+  if (bearerToken) {
+    requestHeaders.set("Authorization", `Bearer ${bearerToken}`);
   }
 
   // Gabungkan custom headers jika ada

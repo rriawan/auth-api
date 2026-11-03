@@ -1,82 +1,90 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useLoading } from '@/contexts/LoadingContext';
-import { loginSchema } from '@/lib/zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Loader2, Lock, User } from 'lucide-react';
-import { signIn } from 'next-auth/react';
-import Link from 'next/link';
-import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { z } from 'zod';
-import { handleLoginAction } from './actions/login';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useLoading } from "@/contexts/LoadingContext";
+import { loginSchema } from "@/lib/validation/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { z } from "zod";
+import { handleLoginAction } from "./actions/login";
 
 const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const urlError = searchParams.get("error");
+
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
   const { loading, setLoading } = useLoading();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(
+    urlError === "SessionExpired"
+      ? "Sesi Anda telah berakhir. Silakan masuk kembali."
+      : null
+  );
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      usernameOrEmail: 'superadmin',
-      password: '',
+      usernameOrEmail: "superadmin",
+      password: "",
     },
   });
 
   const onSubmit = (values: z.infer<typeof loginSchema>) => {
+    setServerError(null);
     setLoading(true);
-    setIsSubmitting(true);
 
     startTransition(async () => {
       try {
         const formData = new FormData();
-        formData.append('usernameOrEmail', values.usernameOrEmail);
-        formData.append('password', values.password);
+        formData.append("usernameOrEmail", values.usernameOrEmail);
+        formData.append("password", values.password);
+        formData.append("callbackUrl", callbackUrl);
 
         const res = await handleLoginAction(formData);
 
         if (res?.error) {
+          setServerError(res.error);
           toast.error(res.error);
         } else {
-          await signIn('credentials', {
-            redirect: true,
-            usernameOrEmail: values.usernameOrEmail,
-            password: values.password,
-            callbackUrl: '/',
-          });
-          toast.success('Login berhasil!');
+          toast.success("Login berhasil!");
         }
       } catch {
-        toast.error('Terjadi kesalahan. Silakan coba kembali.');
+        // Jika Server Action melakukan internal redirect, browser akan menangani navigasi
       } finally {
         setLoading(false);
       }
     });
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 2000);
   };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-5"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        {/* Banner error dari server / query parameter */}
+        {serverError && (
+          <Alert variant="destructive" className="rounded-xl border-red-500/50 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-sm font-medium">
+              {serverError}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Username or Email Field */}
         <FormField
           control={form.control}
@@ -92,7 +100,7 @@ const LoginForm = () => {
                     placeholder="Username atau Email"
                     name="usernameOrEmail"
                     className="ps-13 pe-12 h-14 rounded-xl bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 focus:border-primary dark:focus:border-primary focus-visible:border-primary !shadow-none !ring-0"
-                    disabled={loading}
+                    disabled={loading || isPending}
                   />
                 </div>
               </FormControl>
@@ -112,11 +120,11 @@ const LoginForm = () => {
                   <Lock className="absolute start-5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-700 dark:text-neutral-200" />
                   <Input
                     {...field}
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     name="password"
                     className="ps-13 pe-12 h-14 rounded-xl bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 focus:border-primary dark:focus:border-primary focus-visible:border-primary !shadow-none !ring-0"
-                    disabled={loading}
+                    disabled={loading || isPending}
                   />
                   <Button
                     type="button"
@@ -143,7 +151,7 @@ const LoginForm = () => {
               id="remember"
               className="border border-neutral-500 w-4.5 h-4.5"
             />
-            <label htmlFor="remember" className="text-sm">
+            <label htmlFor="remember" className="text-sm cursor-pointer select-none">
               Ingat saya
             </label>
           </div>
@@ -158,16 +166,16 @@ const LoginForm = () => {
         {/* Submit Button */}
         <Button
           type="submit"
-          className="w-full rounded-lg h-[52px] text-sm mt-2"
+          className="w-full rounded-lg h-[52px] text-sm mt-2 font-medium"
           disabled={loading || isPending}
         >
-          {isSubmitting || isPending ? (
+          {isPending || loading ? (
             <>
               <Loader2 className="animate-spin h-4.5 w-4.5 mr-2" />
-              Memproses...
+              Memproses Autentikasi...
             </>
           ) : (
-            'Masuk'
+            "Masuk"
           )}
         </Button>
       </form>
