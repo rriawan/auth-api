@@ -17,6 +17,7 @@ public static class DependencyInjection
     {
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.Configure<SecuritySettings>(configuration.GetSection(SecuritySettings.SectionName));
+        services.Configure<NotificationSettings>(configuration.GetSection(NotificationSettings.SectionName));
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
@@ -38,7 +39,7 @@ public static class DependencyInjection
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
 
-        // Decoupled Notification Dispatcher (Fase 5)
+        // Decoupled Notification Dispatcher (Fase 5 & F0)
         services.AddScoped<IAuthNotificationDispatcher, LoggingAuthNotificationDispatcher>();
 
         return services;

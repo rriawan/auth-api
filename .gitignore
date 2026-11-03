@@ -43,3 +43,18 @@ publish/
 appsettings.Local.json
 appsettings.Production.json
 
+
+# Node / Next.js (web/auth-admin-portal)
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+.env*.local
+.env.production
+.env.staging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
