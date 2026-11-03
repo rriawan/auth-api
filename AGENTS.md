@@ -3,9 +3,9 @@
 Dokumen ini menjadi memori permanen dan aturan utama bagi seluruh model AI yang bekerja di repository ini, baik saat **menyempurnakan perencanaan** maupun saat **mengeksekusi penulisan kode**.
 
 ## 1. Tujuan Repository
-- Repository `auth-api` dikhususkan sebagai **layanan terpusat Authentication (AuthN) dan Authorization (AuthZ)** berbasis REST Web API.
+- Repository `auth-api` dikhususkan sebagai **layanan terpusat Authentication (AuthN) dan Authorization (AuthZ)** berbasis REST Web API beserta **Auth Admin Portal (`web/auth-admin-portal`)**.
 - Setiap kali pemilik projek membuat projek/aplikasi baru di masa depan, aplikasi baru tersebut cukup memanggil endpoint API dari repo ini (atau memverifikasi token JWT via endpoint JWKS repo ini) tanpa perlu membangun sistem autentikasi/otorisasi sendiri.
-- Dokumen blueprint utama tersimpan di `PLANNING.md` dan catatan progres pengerjaan tersimpan di `STATUS.md` pada root repository. **Selalu baca `STATUS.md` dan `PLANNING.md` terlebih dahulu sebelum mengubah perencanaan atau menulis kode.**
+- Dokumen blueprint utama backend tersimpan di `PLANNING.md`, blueprint frontend tersimpan di `PLANNING_FRONTEND.md`, dan catatan progres pengerjaan tersimpan di `STATUS.md` pada root repository. **Selalu baca `STATUS.md`, `PLANNING.md`, dan `PLANNING_FRONTEND.md` terlebih dahulu sebelum mengubah perencanaan atau menulis kode.**
 
 ## 2. Spesifikasi Teknologi Mutlak (Hard Constraints)
 1. **Versi .NET:** Wajib menggunakan **.NET Core / .NET versi Long Term Support (LTS) terbaru dengan versi patch tertinggi**, yaitu **.NET 10 LTS (`net10.0`, lini `10.0.x` tertinggi)**.
@@ -13,6 +13,7 @@ Dokumen ini menjadi memori permanen dan aturan utama bagi seluruh model AI yang 
 2. **ORM:** Wajib menggunakan **Entity Framework Core 10** (`Microsoft.EntityFrameworkCore.SqlServer` versi stabil `10.0.*` tertinggi) dengan pendekatan **Code-First Migrations**.
 3. **Database:** Wajib menggunakan **Microsoft SQL Server (MSSQL)**.
 4. **OpenAPI UI:** Gunakan `Microsoft.AspNetCore.OpenApi` (`10.0.*`) bawaan .NET 10 yang dipadukan dengan `Scalar.AspNetCore` (hindari `Swashbuckle.AspNetCore` lama kecuali diminta eksplisit oleh user).
+5. **Frontend Admin Portal (`web/auth-admin-portal`):** Wajib menggunakan **Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS v4 + shadcn/ui + NextAuth v5** mengacu pada template `rriawan/TEMPLATE_NEXT` dan spesifikasi pada `PLANNING_FRONTEND.md`.
 
 ## 3. Keputusan Arsitektur & Bisnis yang Telah Dikunci
 Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan keputusan pemilik projek berikut:
@@ -23,29 +24,33 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
   1. **Client ID & API Key Management** untuk mendaftarkan projek/aplikasi baru dan mengautentikasi komunikasi antar-backend (`X-Client-Id` + `X-Api-Key`).
   2. **Audit Log & Account Lockout** untuk pencatatan riwayat keamanan login/auth dan proteksi *brute-force* (ditambah Rate Limiting).
   3. **Alur Aktivasi Akun & Forgot/Reset Password** berbasis *one-time hashed token* yang dirancang *decoupled* (melalui interface abstraksi pengirim notifikasi) agar siap dihubungkan ke layanan Email/WhatsApp kapan saja.
+  4. **Auth Admin Portal & Halaman Self-Service (`web/auth-admin-portal`):** Aplikasi web Next.js 16 dengan pola BFF (NextAuth v5 Credentials + cookie `httpOnly` terenkripsi) sesuai blueprint pada `PLANNING_FRONTEND.md`.
 - **Out of Scope Saat Ini (Jangan Dibuat Tanpa Instruksi Baru):**
   - Two-Factor Authentication (2FA / OTP).
   - Full OAuth2 / OIDC flows.
-  - Aplikasi Frontend / UI Admin Dashboard.
+  - Social Login & Registrasi Mandiri (*Sign Up*) publik.
 
 ## 4. Aturan Saat Diminta Mengubah atau Menambah Dokumen Planning
-- Pertahankan gaya penulisan `PLANNING.md` pada level **High-Level** (fokus pada arsitektur, alur kerja, kontrak endpoint, desain konseptual database, aturan keamanan, dan tahapan pengerjaan).
-- **Hindari** menaruh potongan kode C# implementasi panjang di dalam dokumen planning.
-- Tuliskan instruksi secara eksplisit, terstruktur, dan bebas ambiguitas karena `PLANNING.md` dirancang khusus agar dapat dieksekusi dengan aman oleh **Junior Programmer** atau **Model AI yang lebih murah/kecil**.
+- Pertahankan gaya penulisan `PLANNING.md` dan `PLANNING_FRONTEND.md` pada level **High-Level** (fokus pada arsitektur, alur kerja, kontrak endpoint, desain konseptual database, aturan keamanan, dan tahapan pengerjaan).
+- **Hindari** menaruh potongan kode C# atau TypeScript implementasi panjang di dalam dokumen planning.
+- Tuliskan instruksi secara eksplisit, terstruktur, dan bebas ambiguitas karena dokumen planning dirancang khusus agar dapat dieksekusi dengan aman oleh **Junior Programmer** atau **Model AI yang lebih murah/kecil**.
 
 ## 5. Aturan Saat Diminta Mengimplementasikan Kode (Untuk Model Eksekutor)
-1. **Kerjakan Bertahap per Fase:** Ikuti urutan **Fase 1 s/d Fase 8** di `PLANNING.md` satu per satu. Jangan menulis semua fase sekaligus dalam satu langkah besar.
-2. **Patuhi Struktur 4 Project (Clean/Layered Architecture):**
-   - `AuthApi.Domain` (Entitas & Enum murni tanpa dependensi eksternal)
-   - `AuthApi.Application` (DTO, Interface, Validasi, Use-Case Bisnis)
-   - `AuthApi.Infrastructure` (EF Core 10 MSSQL, Migrations, RSA/JWT RS256, Hashing, Audit Log)
-   - `AuthApi.WebApi` (Tipis/Thin Endpoints, Middleware, Rate Limit, OpenAPI, DI)
+1. **Kerjakan Bertahap per Fase:** Ikuti urutan **Fase 1 s/d Fase 8** di `PLANNING.md` (untuk backend) dan **Fase F0 s/d Fase F10** di `PLANNING_FRONTEND.md` (untuk frontend) satu per satu. Jangan menulis semua fase sekaligus dalam satu langkah besar.
+2. **Patuhi Struktur Project:**
+   - **Backend (4 Project Clean/Layered Architecture di `src/`):**
+     - `AuthApi.Domain` (Entitas & Enum murni tanpa dependensi eksternal)
+     - `AuthApi.Application` (DTO, Interface, Validasi, Use-Case Bisnis)
+     - `AuthApi.Infrastructure` (EF Core 10 MSSQL, Migrations, RSA/JWT RS256, Hashing, Audit Log)
+     - `AuthApi.WebApi` (Tipis/Thin Endpoints, Middleware, Rate Limit, OpenAPI, DI)
+   - **Frontend (`web/auth-admin-portal`):** Next.js 16 App Router dengan pola BFF sesuai `PLANNING_FRONTEND.md`.
 3. **Wajib Aman secara Kriptografi:**
    - Dilarang menyimpan Password, Refresh Token, Client API Key, atau Token Reset/Aktivasi secara *plain-text* di database (hash password dengan PasswordHasher/Argon2id; hash token & API key dengan SHA-256).
-   - Dilarang melakukan hardcode atau commit kredensial MSSQL maupun RSA Private Key ke Git.
-4. **Verifikasi Setiap Selesai Satu Langkah:** Selalu jalankan `dotnet build` (dan `dotnet test` bila project test sudah tersedia) untuk memastikan tidak ada *compile error* sebelum melaporkan sebuah fase selesai.
+   - Dilarang menyimpan `accessToken`, `refreshToken`, atau `rawApiKey` di `localStorage`, `sessionStorage`, state URL, maupun cookie non-`httpOnly` di sisi frontend.
+   - Dilarang melakukan hardcode atau commit kredensial MSSQL, RSA Private Key, maupun `AUTH_SECRET` ke Git.
+4. **Verifikasi Setiap Selesai Satu Langkah:** Selalu jalankan `dotnet build` & `dotnet test` (untuk perubahan backend) serta `npm run lint` & `npm run build` di `web/auth-admin-portal` (untuk perubahan frontend) guna memastikan tidak ada *compile/build error* sebelum melaporkan sebuah fase selesai.
 5. **Perbarui `STATUS.md` Secara Berkala:** Setiap kali selesai mengerjakan satu fase atau langkah penting, selalu perbarui file `STATUS.md` agar status terakhir selalu siap dilanjutkan kapan saja.
-6. **Tanya Jika Ragu:** Jika menemukan kebutuhan yang bertentangan dengan `PLANNING.md` atau belum jelas, tanyakan konfirmasi ke user terlebih dahulu sebelum berasumsi.
+6. **Tanya Jika Ragu:** Jika menemukan kebutuhan yang bertentangan dengan `PLANNING.md` / `PLANNING_FRONTEND.md` atau belum jelas, tanyakan konfirmasi ke user terlebih dahulu sebelum berasumsi.
 
 ## 6. Aturan Git & Version Control
 1. **Jangan Commit Tanpa Instruksi Eksplisit:** Dilarang melakukan `git commit` (ke repository lokal) maupun `git push` (ke GitHub/remote) apabila belum diminta secara eksplisit oleh user.
@@ -65,10 +70,8 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
 ## 8. Aturan Memori Kerja & Kontinuitas Sesi (`STATUS.md`)
 1. **Wajib Periksa Sebelum Bekerja:** Setiap kali sesi dimulai atau dilanjutkan, model AI **wajib** membaca `STATUS.md` pada root repository terlebih dahulu untuk mengetahui posisi pekerjaan terakhir.
 2. **Struktur Wajib `STATUS.md`:** File `STATUS.md` harus selalu memiliki dan memelihara 4 bagian utama berikut:
-   - **Sedang Dikerjakan:** Posisi fase/tugas aktif saat ini beserta daftar centang (*checklist*) progres Fase 1 s/d Fase 8.
+   - **Sedang Dikerjakan:** Posisi fase/tugas aktif saat ini beserta daftar centang (*checklist*) progres Fase 1 s/d Fase 8 (backend) dan Fase F0 s/d Fase F10 (frontend).
    - **Keputusan Penting:** Keputusan teknis/implementasi penting yang telah diambil selama pengerjaan.
    - **Masalah yang Diketahui:** Daftar kendala terbuka, catatan teknis, atau langkah manual yang masih menunggu eksekusi.
    - **Langkah Berikutnya:** Urutan tindakan konkret selanjutnya agar sesi baru dapat langsung mengeksekusi pekerjaan tanpa mengulang analisis dari awal.
 3. **Wajib Perbarui Setelah Bekerja:** Setiap kali menyelesaikan suatu fase, membuat keputusan teknis baru, menemukan masalah, atau sebelum mengakhiri giliran kerja penting, model AI **wajib** memperbarui isi `STATUS.md`.
-
-
