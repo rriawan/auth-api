@@ -3,8 +3,8 @@
 import { forgotPasswordSchema } from '@/lib/zod';
 
 export async function handleForgotPasswordAction(formData: FormData) {
-  const usernameOrEmail = formData.get('usernameOrEmail');
-  const parsed = forgotPasswordSchema.safeParse({ usernameOrEmail });
+  const emailOrUsername = formData.get('emailOrUsername');
+  const parsed = forgotPasswordSchema.safeParse({ emailOrUsername });
 
   if (!parsed.success) {
     return {

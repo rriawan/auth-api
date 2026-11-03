@@ -28,7 +28,8 @@ const CreatePasswordComponent = () => {
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      password: "",
+      token: "",
+      newPassword: "",
       confirmPassword: "",
     },
   });
@@ -46,10 +47,10 @@ const CreatePasswordComponent = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-5"
       >
-        {/* Password */}
+        {/* Password Baru */}
         <FormField
           control={form.control}
-          name="password"
+          name="newPassword"
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -59,7 +60,7 @@ const CreatePasswordComponent = () => {
                     {...field}
                     type={showPassword ? "text" : "password"}
                     placeholder="Password Baru"
-                    name="password"
+                    name="newPassword"
                     className="ps-13 pe-12 h-14 rounded-xl bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 focus:border-primary dark:focus:border-primary focus-visible:border-primary !shadow-none !ring-0"
                   />
                   <Button

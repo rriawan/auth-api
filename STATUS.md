@@ -12,7 +12,7 @@
 - **Backend (`PLANNING.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
   - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 11, Failed: 0, Skipped: 0`).
-- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0** dan **Fase F1** telah **selesai 100%**. Menunggu instruksi untuk memulai **Fase F2 (Lapisan API Client & Tipe Kontrak)**.
+- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0**, **Fase F1**, dan **Fase F2** telah **selesai 100%**. Siap melanjutkan ke **Fase F3 (Autentikasi Portal NextAuth v5, Rotasi Token di `proxy.ts`, & Proteksi Route)**.
   - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 7/7 routes successfully`).
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
@@ -37,7 +37,14 @@
   - Menyiapkan `.env.example` dan `.env.local` untuk integrasi backend `http://localhost:5100` (`clientId = auth-admin`).
   - Memperbarui `.gitignore` di root dan folder web.
   - `npm run lint` dan `npm run build` lulus 100% tanpa error/warning.
-- [ ] **Fase F2 — Lapisan API Client (`lib/api`) & Tipe Kontrak**
+- [x] **Fase F2 — Lapisan API Client (`lib/api`) & Tipe Kontrak** *(Selesai 100%)*
+  - Membuat `lib/api/types.ts`: Pemetaan tipe DTO TypeScript 1:1 dari backend (`AuthDtos.cs`, `AdminDtos.cs`, `JwksModels.cs`), `ProblemDetails` (RFC 9457), dan `PagedResponse<T>`.
+  - Membuat `lib/api/errors.ts`: Kelas `ApiException` yang memetakan error ProblemDetails RFC 9457 lengkap dengan helper status HTTP (`isUnauthorized`, `isForbidden`, `isNotFound`, `isConflict`, `isRateLimited`, `isServerError`).
+  - Membuat `lib/api/client.ts` (`server-only`): Fungsi `apiFetch<T>` terpusat dengan penanganan timeout, header forwarding (`X-Forwarded-For`, `User-Agent`) otomatis dari incoming headers Next.js, `cache: 'no-store'`, dan parser ProblemDetails.
+  - Membuat domain API modules: `authApi`, `appsApi`, `usersApi`, `rolesApi`, `permissionsApi`, `userAppRolesApi`, dan `auditLogsApi` di `lib/api/`.
+  - Membuat skema validasi Zod lengkap di `lib/validation/` (`auth.schema.ts`, `apps.schema.ts`, `users.schema.ts`, `roles.schema.ts`, `permissions.schema.ts`) dengan aturan bisnis selaras backend (panjang password 8-256 karakter, format `clientId`, pola permission `modul.aksi`).
+  - Mengganti import Google Fonts pada `app/layout.tsx` dengan font-sans native untuk stabilitas proses build offline/sandbox.
+  - Verifikasi: `npm run lint` (0 problems), `npm run build` (Turbopack 7/7 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
 - [ ] **Fase F3 — Autentikasi Portal (NextAuth v5 + Rotasi Token di `proxy.ts`) & Proteksi Route**
 - [ ] **Fase F4 — Halaman Self-Service Publik (Forgot/Reset Password & Aktivasi Akun)**
 - [ ] **Fase F5 — Profil & Ganti Password**
@@ -77,5 +84,5 @@
 ## 4. Langkah Berikutnya
 
 1. **Menunggu Instruksi User:**
-   - Melakukan commit untuk hasil pekerjaan **Fase F0 & F1**, atau
-   - Melanjutkan ke **Fase F2 (Lapisan API Client `lib/api` & Tipe Kontrak TypeScript)**.
+   - Melakukan commit untuk hasil pekerjaan **Fase F2 (Lapisan API Client & Skema Validasi Zod)**, atau
+   - Langsung melanjutkan ke **Fase F3 (Autentikasi Portal NextAuth v5, Rotasi Token di `proxy.ts`, & Proteksi Route)**.

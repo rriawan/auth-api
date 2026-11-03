@@ -1,12 +1,6 @@
 import { LoadingProvider } from "@/contexts/LoadingContext";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Auth Admin Portal — Layanan Terpusat Autentikasi & Otorisasi",
@@ -20,7 +14,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+      <body className="font-sans antialiased">
         <LoadingProvider>
           {children}
         </LoadingProvider>

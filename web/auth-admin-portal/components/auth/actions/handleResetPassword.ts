@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 
 export async function handleResetPassword(formData: FormData) {
   const values = {
-    password: formData.get("password"),
+    token: formData.get("token") || "dummy-token",
+    newPassword: formData.get("newPassword"),
     confirmPassword: formData.get("confirmPassword"),
   };
 
