@@ -1,5 +1,6 @@
 using AuthApi.Application.Common.Interfaces;
 using AuthApi.Application.Common.Models;
+using AuthApi.Infrastructure.Notifications;
 using AuthApi.Infrastructure.Persistence;
 using AuthApi.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,9 @@ public static class DependencyInjection
         services.AddSingleton<RsaKeyProvider>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuditLogService, AuditLogService>();
+
+        // Decoupled Notification Dispatcher (Fase 5)
+        services.AddScoped<IAuthNotificationDispatcher, LoggingAuthNotificationDispatcher>();
 
         return services;
     }
