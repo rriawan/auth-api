@@ -12,8 +12,8 @@
 - **Backend (`PLANNING.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
   - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 11, Failed: 0, Skipped: 0`).
-- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0** dan **Fase F1** telah **selesai 100%**. Menunggu instruksi untuk memulai **Fase F2 (Lapisan API Client & Tipe Kontrak)**.
-  - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 7/7 routes successfully`).
+- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0 s/d Fase F5** telah **selesai 100%**. Siap melanjutkan ke **Fase F6 (Manajemen Aplikasi ClientApps & API Key)**.
+  - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 11/11 routes successfully`).
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
 - [x] **Fase 1 — Inisialisasi Solution & Pondasi .NET 10 LTS** *(Selesai 100%)*
@@ -37,10 +37,36 @@
   - Menyiapkan `.env.example` dan `.env.local` untuk integrasi backend `http://localhost:5100` (`clientId = auth-admin`).
   - Memperbarui `.gitignore` di root dan folder web.
   - `npm run lint` dan `npm run build` lulus 100% tanpa error/warning.
-- [ ] **Fase F2 — Lapisan API Client (`lib/api`) & Tipe Kontrak**
-- [ ] **Fase F3 — Autentikasi Portal (NextAuth v5 + Rotasi Token di `proxy.ts`) & Proteksi Route**
-- [ ] **Fase F4 — Halaman Self-Service Publik (Forgot/Reset Password & Aktivasi Akun)**
-- [ ] **Fase F5 — Profil & Ganti Password**
+- [x] **Fase F2 — Lapisan API Client (`lib/api`) & Tipe Kontrak** *(Selesai 100%)*
+  - Membuat `lib/api/types.ts`: Pemetaan tipe DTO TypeScript 1:1 dari backend (`AuthDtos.cs`, `AdminDtos.cs`, `JwksModels.cs`), `ProblemDetails` (RFC 9457), dan `PagedResponse<T>`.
+  - Membuat `lib/api/errors.ts`: Kelas `ApiException` yang memetakan error ProblemDetails RFC 9457 lengkap dengan helper status HTTP (`isUnauthorized`, `isForbidden`, `isNotFound`, `isConflict`, `isRateLimited`, `isServerError`).
+  - Membuat `lib/api/client.ts` (`server-only`): Fungsi `apiFetch<T>` terpusat dengan penanganan timeout, header forwarding (`X-Forwarded-For`, `User-Agent`) otomatis dari incoming headers Next.js, `cache: 'no-store'`, dan parser ProblemDetails.
+  - Membuat domain API modules: `authApi`, `appsApi`, `usersApi`, `rolesApi`, `permissionsApi`, `userAppRolesApi`, dan `auditLogsApi` di `lib/api/`.
+  - Membuat skema validasi Zod lengkap di `lib/validation/` (`auth.schema.ts`, `apps.schema.ts`, `users.schema.ts`, `roles.schema.ts`, `permissions.schema.ts`) dengan aturan bisnis selaras backend (panjang password 8-256 karakter, format `clientId`, pola permission `modul.aksi`).
+  - Mengganti import Google Fonts pada `app/layout.tsx` dengan font-sans native untuk stabilitas proses build offline/sandbox.
+  - Verifikasi: `npm run lint` (0 problems), `npm run build` (Turbopack 7/7 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
+- [x] **Fase F3 — Autentikasi Portal (NextAuth v5 + Rotasi Token di `proxy.ts`) & Proteksi Route** *(Selesai 100%)*
+  - Mengonfigurasi `auth.ts` dengan Credentials Provider memanggil `authApi.login({ usernameOrEmail, password, clientId = 'auth-admin' })`, menangani error spesifik backend (`ApiException`: 401, 403, 429), dan memetakan ke subclass `CustomAuthError` (`CredentialsSignin`).
+  - Menjaga efisiensi cookie NextAuth (< 4096 bytes) dengan menyimpan `accessToken`, `refreshToken`, `accessTokenExpiresAt`, dan user ringkas di JWT token tanpa menduplikasi array `roles`/`permissions`.
+  - Callback `session` mengekstrak `roles` dan `permissions` secara dinamis di sisi server melalui `decodeAccessTokenClaims(token.accessToken)` tanpa mengekspos raw token ke client.
+  - Mengonfigurasi `proxy.ts` (Next.js 16 Middleware): bypass rute publik, proteksi rute tertutup dengan redirect ke `/auth/login?callbackUrl=...`, single-flight refresh token ke backend saat token mendekati kedaluwarsa (<= 60s) dengan penulisan ulang `Set-Cookie` ke response, dan penanganan session revocation.
+  - Menyediakan helper otorisasi `lib/auth/permissions.ts` (`isSuperAdmin`, `hasPermission`, `requirePermission`) dan komponen UI `<Can permission="...">` di `components/auth/can.tsx` dengan bypass otomatis untuk `SuperAdmin`.
+  - Mengimplementasikan helper `getServerAccessToken()` di `lib/api/auth-token.ts` dan menghubungkannya ke `lib/api/client.ts` sehingga panggilan API admin otomatis menyematkan Bearer token.
+  - Menghubungkan alur logout ke backend `POST /api/v1/auth/logout` dengan `refreshToken` untuk mencabut token di MSSQL dan mencatat audit log, lalu menghapus session NextAuth.
+  - Memperbarui halaman dan formulir login `components/auth/login-form.tsx` dengan feedback error dinamis (401, 403, 429, SessionExpired) dan komponen `components/ui/alert.tsx`.
+- [x] **Fase F4 — Halaman Self-Service Publik (Forgot/Reset Password & Aktivasi Akun)** *(Selesai 100%)*
+  - Mengimplementasikan alur `/auth/forgot-password` dengan server action `handleForgotPasswordAction` memanggil `authApi.forgotPassword`. Menampilkan pesan sukses generik untuk melindungi privasi akun sesuai aturan mitigasi enumerasi (`PLANNING_FRONTEND.md` Bagian 8.4).
+  - Mengimplementasikan alur `/auth/reset-password?token=...` dengan validasi password baru dan konfirmasi (min 8 karakter) via `resetPasswordSchema` dan server action `handleResetPassword`. Menangani token tidak ada atau tidak valid/kedaluwarsa dari backend secara informatif. Menjaga kompatibilitas route lama `/auth/create-password`.
+  - Mengimplementasikan alur `/auth/activate-account` dengan server action `handleRequestActivationAction` memanggil `authApi.requestActivation` dengan pesan sukses generik.
+  - Mengimplementasikan alur `/auth/activate-account/confirm?token=...` yang otomatis memvalidasi token aktivasi ke backend `authApi.confirmActivation`, menampilkan status sukses (centang hijau) dengan navigasi ke login, atau status gagal (silang merah) dengan tombol meminta tautan aktivasi baru.
+  - Verifikasi: `npm run lint` (0 error, 0 warning), `npm run build` (Turbopack 10/10 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
+- [x] **Fase F5 — Profil & Ganti Password** *(Selesai 100%)*
+  - Mengimplementasikan halaman `/profile` (Server Component) dengan breadcrumb navigasi, proteksi sesi, serta pemanggilan realtime `GET /api/v1/auth/me` (`authApi.getMe`).
+  - Menampilkan ringkasan profil administrator (`components/profile/profile-overview.tsx`): identitas akun, salin User ID global ke clipboard, konteks aplikasi `auth-admin`, badge status (Aktif/Terverifikasi), daftar peran (Roles), dan izin efektif (Permissions) dengan penanda khusus SuperAdmin.
+  - Memisahkan helper murni `isSuperAdmin` dan `hasPermission` ke `lib/auth/permission-rules.ts` agar komponen client tidak mengimpor modul `server-only`.
+  - Mengimplementasikan form ganti password (`components/profile/change-password-form.tsx`) dengan validasi `changePasswordSchema` (min 8 karakter, konfirmasi cocok, tidak boleh sama dengan password saat ini).
+  - Mengimplementasikan Server Action `handleChangePasswordAction` memanggil `authApi.changePassword`. Setelah perubahan sukses, sistem secara otomatis membersihkan sesi NextAuth lokal dan mengarahkan admin untuk login ulang sesuai aturan bahwa backend mencabut seluruh sesi aktif user.
+  - Verifikasi: `npm run lint` (0 error, 0 warning), `npm run build` (Turbopack 11/11 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
 - [ ] **Fase F6 — Manajemen Aplikasi (`ClientApps`) & API Key**
 - [ ] **Fase F7 — Permissions & Roles per Aplikasi**
 - [ ] **Fase F8 — Manajemen User & Penugasan Akses**
@@ -77,5 +103,5 @@
 ## 4. Langkah Berikutnya
 
 1. **Menunggu Instruksi User:**
-   - Melakukan commit untuk hasil pekerjaan **Fase F0 & F1**, atau
-   - Melanjutkan ke **Fase F2 (Lapisan API Client `lib/api` & Tipe Kontrak TypeScript)**.
+   - Melakukan commit untuk hasil pekerjaan **Fase F3, F4, & F5 (Autentikasi, Self-Service, & Profil/Password)**, atau
+   - Langsung melanjutkan ke **Fase F6 (Manajemen Aplikasi ClientApps & API Key di `/apps`)**.

@@ -53,10 +53,15 @@ const ProfileDropdown = () => {
         <div className="py-3 px-4 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-between">
           <div>
             <h6 className="text-base text-neutral-900 dark:text-white font-semibold mb-0">
-              {session?.user?.name || "Administrator"}
+              {session?.user?.fullName ||
+                session?.user?.username ||
+                session?.user?.name ||
+                "Administrator"}
             </h6>
             <span className="text-xs text-neutral-500 dark:text-neutral-300">
-              {session?.user?.email || "SuperAdmin"}
+              {session?.user?.email ||
+                session?.user?.roles?.[0] ||
+                "SuperAdmin"}
             </span>
           </div>
         </div>
