@@ -50,4 +50,15 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
 1. **Jangan Commit Tanpa Instruksi Eksplisit:** Dilarang melakukan `git commit` (ke repository lokal) maupun `git push` (ke GitHub/remote) apabila belum diminta secara eksplisit oleh user.
 2. **Tanpa Atribusi AI pada Commit:** Saat diminta melakukan commit ke Git/GitHub, **dilarang keras** menambahkan atribusi pembuat atau co-author di pesan commit maupun metadata git (seperti `Co-authored-by:`, `Created by`, `Generated with ...`, atau atribusi AI/model lainnya). Gunakan pesan commit yang bersih murni berisi deskripsi perubahan.
 
+## 7. Aturan Operasi Database (Dikerjakan Manual oleh User)
+1. **Dilarang Menjalankan Operasi Database Apa Pun:** Model AI **tidak boleh** mengeksekusi perintah atau tindakan apa pun yang terkait database, termasuk namun tidak terbatas pada:
+   - Menerapkan atau membatalkan migration ke database (`dotnet ef database update`, `dotnet ef database drop`, `Database.Migrate()` otomatis saat startup, dan sejenisnya).
+   - Menghapus migration lewat `dotnet ef migrations remove`, karena perintah ini memeriksa status migration langsung ke database. Jika perlu, berikan sebagai instruksi untuk user.
+   - Menjalankan script SQL / query (`sqlcmd`, `Invoke-Sqlcmd`, SSMS, dsb.) untuk `CREATE`, `ALTER`, `DROP`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, seeding data, maupun backup/restore.
+   - Membuat, menghapus, atau mengubah database, tabel, user/login, maupun connection string pada server MSSQL.
+2. **Yang Tetap Boleh Dikerjakan AI:**
+   - Menulis/mengubah kode C# terkait persistence (entitas Domain, `DbContext`, konfigurasi Fluent API `IEntityTypeConfiguration`, repository).
+   - Membuat file migration pada kode (`dotnet ef migrations add`), selama hanya menghasilkan file migration di dalam project dan **tidak** menerapkannya ke database.
+3. **Berikan Instruksi ke User:** Apabila suatu langkah membutuhkan operasi langsung ke database (misalnya menerapkan migration dengan `dotnet ef database update`), AI cukup **menuliskan instruksi langkah demi langkah beserta perintah yang perlu dijalankan** (contoh lengkap dengan parameter `--project` dan `--startup-project`), lalu **menunggu user** mengeksekusinya sendiri dan mengonfirmasi hasilnya sebelum melanjutkan.
+
 
