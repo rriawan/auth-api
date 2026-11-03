@@ -5,7 +5,7 @@ Dokumen ini menjadi memori permanen dan aturan utama bagi seluruh model AI yang 
 ## 1. Tujuan Repository
 - Repository `auth-api` dikhususkan sebagai **layanan terpusat Authentication (AuthN) dan Authorization (AuthZ)** berbasis REST Web API.
 - Setiap kali pemilik projek membuat projek/aplikasi baru di masa depan, aplikasi baru tersebut cukup memanggil endpoint API dari repo ini (atau memverifikasi token JWT via endpoint JWKS repo ini) tanpa perlu membangun sistem autentikasi/otorisasi sendiri.
-- Dokumen blueprint utama tersimpan di `PLANNING.md` pada root repository. **Selalu baca `PLANNING.md` terlebih dahulu sebelum mengubah perencanaan atau menulis kode.**
+- Dokumen blueprint utama tersimpan di `PLANNING.md` dan catatan progres pengerjaan tersimpan di `STATUS.md` pada root repository. **Selalu baca `STATUS.md` dan `PLANNING.md` terlebih dahulu sebelum mengubah perencanaan atau menulis kode.**
 
 ## 2. Spesifikasi Teknologi Mutlak (Hard Constraints)
 1. **Versi .NET:** Wajib menggunakan **.NET Core / .NET versi Long Term Support (LTS) terbaru dengan versi patch tertinggi**, yaitu **.NET 10 LTS (`net10.0`, lini `10.0.x` tertinggi)**.
@@ -44,7 +44,8 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
    - Dilarang menyimpan Password, Refresh Token, Client API Key, atau Token Reset/Aktivasi secara *plain-text* di database (hash password dengan PasswordHasher/Argon2id; hash token & API key dengan SHA-256).
    - Dilarang melakukan hardcode atau commit kredensial MSSQL maupun RSA Private Key ke Git.
 4. **Verifikasi Setiap Selesai Satu Langkah:** Selalu jalankan `dotnet build` (dan `dotnet test` bila project test sudah tersedia) untuk memastikan tidak ada *compile error* sebelum melaporkan sebuah fase selesai.
-5. **Tanya Jika Ragu:** Jika menemukan kebutuhan yang bertentangan dengan `PLANNING.md` atau belum jelas, tanyakan konfirmasi ke user terlebih dahulu sebelum berasumsi.
+5. **Perbarui `STATUS.md` Secara Berkala:** Setiap kali selesai mengerjakan satu fase atau langkah penting, selalu perbarui file `STATUS.md` agar status terakhir selalu siap dilanjutkan kapan saja.
+6. **Tanya Jika Ragu:** Jika menemukan kebutuhan yang bertentangan dengan `PLANNING.md` atau belum jelas, tanyakan konfirmasi ke user terlebih dahulu sebelum berasumsi.
 
 ## 6. Aturan Git & Version Control
 1. **Jangan Commit Tanpa Instruksi Eksplisit:** Dilarang melakukan `git commit` (ke repository lokal) maupun `git push` (ke GitHub/remote) apabila belum diminta secara eksplisit oleh user.
@@ -60,5 +61,14 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
    - Menulis/mengubah kode C# terkait persistence (entitas Domain, `DbContext`, konfigurasi Fluent API `IEntityTypeConfiguration`, repository).
    - Membuat file migration pada kode (`dotnet ef migrations add`), selama hanya menghasilkan file migration di dalam project dan **tidak** menerapkannya ke database.
 3. **Berikan Instruksi ke User:** Apabila suatu langkah membutuhkan operasi langsung ke database (misalnya menerapkan migration dengan `dotnet ef database update`), AI cukup **menuliskan instruksi langkah demi langkah beserta perintah yang perlu dijalankan** (contoh lengkap dengan parameter `--project` dan `--startup-project`), lalu **menunggu user** mengeksekusinya sendiri dan mengonfirmasi hasilnya sebelum melanjutkan.
+
+## 8. Aturan Memori Kerja & Kontinuitas Sesi (`STATUS.md`)
+1. **Wajib Periksa Sebelum Bekerja:** Setiap kali sesi dimulai atau dilanjutkan, model AI **wajib** membaca `STATUS.md` pada root repository terlebih dahulu untuk mengetahui posisi pekerjaan terakhir.
+2. **Struktur Wajib `STATUS.md`:** File `STATUS.md` harus selalu memiliki dan memelihara 4 bagian utama berikut:
+   - **Sedang Dikerjakan:** Posisi fase/tugas aktif saat ini beserta daftar centang (*checklist*) progres Fase 1 s/d Fase 8.
+   - **Keputusan Penting:** Keputusan teknis/implementasi penting yang telah diambil selama pengerjaan.
+   - **Masalah yang Diketahui:** Daftar kendala terbuka, catatan teknis, atau langkah manual yang masih menunggu eksekusi.
+   - **Langkah Berikutnya:** Urutan tindakan konkret selanjutnya agar sesi baru dapat langsung mengeksekusi pekerjaan tanpa mengulang analisis dari awal.
+3. **Wajib Perbarui Setelah Bekerja:** Setiap kali menyelesaikan suatu fase, membuat keputusan teknis baru, menemukan masalah, atau sebelum mengakhiri giliran kerja penting, model AI **wajib** memperbarui isi `STATUS.md`.
 
 
