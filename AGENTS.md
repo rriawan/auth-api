@@ -46,3 +46,8 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
 4. **Verifikasi Setiap Selesai Satu Langkah:** Selalu jalankan `dotnet build` (dan `dotnet test` bila project test sudah tersedia) untuk memastikan tidak ada *compile error* sebelum melaporkan sebuah fase selesai.
 5. **Tanya Jika Ragu:** Jika menemukan kebutuhan yang bertentangan dengan `PLANNING.md` atau belum jelas, tanyakan konfirmasi ke user terlebih dahulu sebelum berasumsi.
 
+## 6. Aturan Git & Version Control
+1. **Jangan Commit Tanpa Instruksi Eksplisit:** Dilarang melakukan `git commit` (ke repository lokal) maupun `git push` (ke GitHub/remote) apabila belum diminta secara eksplisit oleh user.
+2. **Tanpa Atribusi AI pada Commit:** Saat diminta melakukan commit ke Git/GitHub, **dilarang keras** menambahkan atribusi pembuat atau co-author di pesan commit maupun metadata git (seperti `Co-authored-by:`, `Created by`, `Generated with ...`, atau atribusi AI/model lainnya). Gunakan pesan commit yang bersih murni berisi deskripsi perubahan.
+
+
