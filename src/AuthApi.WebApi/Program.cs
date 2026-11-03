@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.RateLimiting;
 using AuthApi.Application;
 using AuthApi.Application.Common.Models;
@@ -7,6 +8,7 @@ using AuthApi.WebApi.Controllers;
 using AuthApi.WebApi.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi;
@@ -54,7 +56,42 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 5. Built-in Rate Limiting Berbasis IP untuk Endpoint Publik Sensitif
+// 5. Forwarded Headers Middleware (Fase F0 — Pola BFF Reverse Proxy / Next.js Server)
+var forwardedHeadersSettings = builder.Configuration
+    .GetSection(ForwardedHeadersSettings.SectionName)
+    .Get<ForwardedHeadersSettings>() ?? new ForwardedHeadersSettings();
+
+if (forwardedHeadersSettings.Enabled)
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        if (forwardedHeadersSettings.ForwardLimit.HasValue)
+        {
+            options.ForwardLimit = forwardedHeadersSettings.ForwardLimit.Value;
+        }
+
+        options.KnownProxies.Clear();
+        foreach (var proxy in forwardedHeadersSettings.KnownProxies)
+        {
+            if (IPAddress.TryParse(proxy, out var ip))
+            {
+                options.KnownProxies.Add(ip);
+            }
+        }
+
+        options.KnownIPNetworks.Clear();
+        foreach (var network in forwardedHeadersSettings.KnownNetworks)
+        {
+            if (System.Net.IPNetwork.TryParse(network, out var parsedNetwork))
+            {
+                options.KnownIPNetworks.Add(parsedNetwork);
+            }
+        }
+    });
+}
+
+// 6. Built-in Rate Limiting Berbasis IP untuk Endpoint Publik Sensitif
 var securitySettings = builder.Configuration
     .GetSection(SecuritySettings.SectionName)
     .Get<SecuritySettings>() ?? new SecuritySettings();
@@ -99,7 +136,7 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
-// 6. Controllers & Built-in .NET 10 OpenAPI
+// 7. Controllers & Built-in .NET 10 OpenAPI
 builder.Services.AddControllers();
 builder.Services.AddOpenApi(options =>
 {
@@ -138,7 +175,7 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
-// 7. Health Checks (API & MSSQL Database Connectivity)
+// 8. Health Checks (API & MSSQL Database Connectivity)
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("AuthApi service is running."))
     .AddCheck<DatabaseHealthCheck>("mssql");
@@ -160,6 +197,11 @@ if (runSeedFromCli || seedOnStartup)
     {
         return;
     }
+}
+
+if (forwardedHeadersSettings.Enabled)
+{
+    app.UseForwardedHeaders();
 }
 
 app.UseExceptionHandler();

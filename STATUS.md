@@ -11,8 +11,9 @@
 
 - **Backend (`PLANNING.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
-  - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 8, Failed: 0, Skipped: 0`).
-- **Frontend (`PLANNING_FRONTEND.md`):** Dokumen perencanaan `PLANNING_FRONTEND.md` untuk **Auth Admin Portal (`web/auth-admin-portal`)** berbasis Next.js 16 (mengacu pada template `rriawan/TEMPLATE_NEXT`) telah selesai disusun dan disempurnakan. Menunggu instruksi untuk mulai mengeksekusi **Fase F0**.
+  - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 11, Failed: 0, Skipped: 0`).
+- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0** dan **Fase F1** telah **selesai 100%**. Menunggu instruksi untuk memulai **Fase F2 (Lapisan API Client & Tipe Kontrak)**.
+  - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 7/7 routes successfully`).
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
 - [x] **Fase 1 — Inisialisasi Solution & Pondasi .NET 10 LTS** *(Selesai 100%)*
@@ -25,8 +26,17 @@
 - [x] **Fase 8 — Pengujian Otomatis, Hardening & Panduan Integrasi Konsumen** *(Selesai 100%)*
 
 ### B. Ringkasan Progres Fase Frontend (`PLANNING_FRONTEND.md`)
-- [ ] **Fase F0 — Penyesuaian Backend untuk Pola BFF (`ForwardedHeaders` & `PortalBaseUrl`)**
-- [ ] **Fase F1 — Inisialisasi Proyek `web/auth-admin-portal` dari Template**
+- [x] **Fase F0 — Penyesuaian Backend untuk Pola BFF (`ForwardedHeaders` & `PortalBaseUrl`)** *(Selesai 100%)*
+  - Middleware `ForwardedHeadersOptions` dikonfigurasi dengan `KnownProxies` dan `KnownIPNetworks` (.NET 10) untuk memproses `X-Forwarded-For` dari server Next.js BFF terpercaya, sehingga `RateLimiter` dan `AuditLogs` mencatat IP asli pengguna.
+  - Abstraksi notifikasi `LoggingAuthNotificationDispatcher` diperbarui dengan `NotificationSettings:PortalBaseUrl` untuk mencetak tautan lengkap aktivasi akun dan reset password ke portal Next.js.
+  - Pengujian otomatis pada `tests/AuthApi.Tests/BffAndForwardedHeadersTests.cs` memvalidasi link notifikasi, resolusi IP dari proxy tepercaya ke audit log, dan penolakan spoofing IP dari sumber tidak tepercaya.
+- [x] **Fase F1 — Inisialisasi Proyek `web/auth-admin-portal` dari Template** *(Selesai 100%)*
+  - Menyalin template `rriawan/TEMPLATE_NEXT` ke `web/auth-admin-portal` tanpa `.git`, `node_modules`, `.next`.
+  - Membersihkan 22 folder demo dashboard yang tidak relevan, provider Google/GitHub, halaman register publik, mock database `utils/db.ts`, serta demo components.
+  - Memperbarui branding ke "Auth Admin Portal", menata ulang `sidebar-data.ts` (Dashboard, Manajemen Akses, Keamanan, Akun Saya), merapikan Header & Footer, serta menyetel `next.config.ts` dengan Security Headers.
+  - Menyiapkan `.env.example` dan `.env.local` untuk integrasi backend `http://localhost:5100` (`clientId = auth-admin`).
+  - Memperbarui `.gitignore` di root dan folder web.
+  - `npm run lint` dan `npm run build` lulus 100% tanpa error/warning.
 - [ ] **Fase F2 — Lapisan API Client (`lib/api`) & Tipe Kontrak**
 - [ ] **Fase F3 — Autentikasi Portal (NextAuth v5 + Rotasi Token di `proxy.ts`) & Proteksi Route**
 - [ ] **Fase F4 — Halaman Self-Service Publik (Forgot/Reset Password & Aktivasi Akun)**
@@ -49,18 +59,23 @@
    - Ukuran cookie session dijaga di bawah `4096 bytes` dengan tidak menduplikasi array `roles`/`permissions` di dalam cookie (diekstrak dari `accessToken` di sisi server).
    - Pemeriksaan kedaluwarsa & rotasi `refreshToken` wajib dilakukan di `proxy.ts` (atau Route Handler / Server Action) agar cookie baru selalu tertulis kembali ke browser (`Set-Cookie`) dan tidak memicu *Refresh Token Reuse Detection* saat render Server Component.
    - Penambahan fitur daftar user per aplikasi untuk aplikasi konsumen dan aksi bantuan reset password oleh admin dipisahkan ke perencanaan tersendiri.
+4. **Forwarded Headers & Reverse Proxy Trust (Fase F0):**
+   - `UseForwardedHeaders` dijalankan sebelum `UseRateLimiter` dan controller agar seluruh inspeksi IP (rate limiting publik dan audit log) melihat IP asli dari proxy tepercaya (`127.0.0.1`, `::1` atau konfigurasi di `appsettings.json`).
+   - Sumber yang tidak terdaftar di `KnownProxies`/`KnownIPNetworks` tidak dapat melakukan spoofing header `X-Forwarded-For`.
+5. **Pembersihan Template & Next.js 16 Compatibility (Fase F1):**
+   - Menggunakan `.npmrc` dengan `legacy-peer-deps=true` dan `package.json` overrides untuk menjembatani peer dependency `next-auth@5.0.0-beta.29` pada Next.js 16.
+   - Menghapus komponen demo yang tidak relevan (crypto, nft, charts demo, calendar, chat, email, marketplace, theme customizer) agar project ramping, cepat di-build, dan mematuhi aturan strict compiler React 19.
 
 ---
 
 ## 3. Masalah yang Diketahui
 
-1. **Tidak Ada Blocker:** Seluruh kode backend telah di-merge ke `main` dan dokumen `PLANNING_FRONTEND.md` siap dieksekusi.
+1. **Tidak Ada Blocker:** Baik backend (.NET 10) maupun frontend (Next.js 16) lulus build dan lint 100%.
 
 ---
 
 ## 4. Langkah Berikutnya
 
 1. **Menunggu Instruksi User:**
-   - Memulai pengerjaan **Fase F0** sesuai `PLANNING_FRONTEND.md`, atau
-   - Menyusun dokumen perencanaan terpisah untuk fitur tambahan yang ditangguhkan, atau
-   - Melakukan commit pembaruan dokumen (`PLANNING_FRONTEND.md`, `AGENTS.md`, `STATUS.md`) ke repository jika diminta oleh User.
+   - Melakukan commit untuk hasil pekerjaan **Fase F0 & F1**, atau
+   - Melanjutkan ke **Fase F2 (Lapisan API Client `lib/api` & Tipe Kontrak TypeScript)**.
