@@ -12,8 +12,8 @@
 - **Backend (`PLANNING.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
   - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 11, Failed: 0, Skipped: 0`).
-- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0 s/d Fase F5** telah **selesai 100%**. Siap melanjutkan ke **Fase F6 (Manajemen Aplikasi ClientApps & API Key)**.
-  - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 11/11 routes successfully`).
+- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0 s/d Fase F6** telah **selesai 100%**. Siap melanjutkan ke **Fase F7 (Permissions & Roles per Aplikasi)**.
+  - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 12/12 routes successfully`).
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
 - [x] **Fase 1 — Inisialisasi Solution & Pondasi .NET 10 LTS** *(Selesai 100%)*
@@ -67,7 +67,17 @@
   - Mengimplementasikan form ganti password (`components/profile/change-password-form.tsx`) dengan validasi `changePasswordSchema` (min 8 karakter, konfirmasi cocok, tidak boleh sama dengan password saat ini).
   - Mengimplementasikan Server Action `handleChangePasswordAction` memanggil `authApi.changePassword`. Setelah perubahan sukses, sistem secara otomatis membersihkan sesi NextAuth lokal dan mengarahkan admin untuk login ulang sesuai aturan bahwa backend mencabut seluruh sesi aktif user.
   - Verifikasi: `npm run lint` (0 error, 0 warning), `npm run build` (Turbopack 11/11 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
-- [ ] **Fase F6 — Manajemen Aplikasi (`ClientApps`) & API Key**
+- [x] **Fase F6 — Manajemen Aplikasi (`ClientApps`) & API Key** *(Selesai 100%)*
+  - Mengimplementasikan Server Actions (`components/apps/actions/apps.ts`): `createAppAction`, `updateAppAction`, dan `rotateApiKeyAction` dengan proteksi izin (`requirePermission('apps.write')`, `requirePermission('apps.rotate-key')`), validasi Zod (`createClientAppSchema`, `updateClientAppSchema`), `revalidatePath`, dan proteksi pemblokiran penonaktifan aplikasi sistem `auth-admin`.
+  - Mengimplementasikan modal sekali-tampil API Key (`components/apps/api-key-reveal-modal.tsx`) sesuai aturan keamanan Bagian 8.1: menampilkan `rawApiKey` hanya sekali dengan tombol salin, peringatan tegas, dan panduan header `X-Client-Id` & `X-Api-Key` tanpa menyimpannya ke state global/storage/cookie.
+  - Mengimplementasikan dialog pendaftaran aplikasi baru (`components/apps/create-app-dialog.tsx`) dengan validasi format `clientId`, auto-lowercase, input CORS allowed origins, dan langsung membuka modal API Key setelah berhasil.
+  - Mengimplementasikan tabel aplikasi (`components/apps/apps-table.tsx`) dan halaman `/apps` (`app/(dashboard)/apps/page.tsx`) dengan pencarian instan (nama/client id/deskripsi), filter status (semua/aktif/nonaktif), badge aplikasi sistem, salin Client ID, format tanggal Indonesia, dan pembungkusan tombol registrasi dengan `<Can permission="apps.write">`.
+  - Mengimplementasikan halaman detail `/apps/[appId]` (`app/(dashboard)/apps/[appId]/page.tsx`) dengan breadcrumbs, header ringkasan, dan 4 tab:
+    - Tab *Informasi* (`components/apps/app-info-tab.tsx`): pembaruan nama, deskripsi, CORS origins, switch status aktif yang dikunci untuk `auth-admin`, serta tombol simpan berizin.
+    - Tab *API Key & Integrasi* (`components/apps/app-api-key-tab.tsx`): tampilan prefix kunci aktif, snippet integrasi backend M2M, peringatan destruktif rotasi, dan dialog konfirmasi rotasi kunci yang otomatis menampilkan modal kunci baru.
+    - Tab *Permissions* (`components/apps/app-permissions-tab.tsx`): tampilan jumlah izin terdaftar dan placeholder informatif untuk Fase F7.
+    - Tab *Roles* (`components/apps/app-roles-tab.tsx`): tampilan jumlah peran terdaftar dan placeholder informatif untuk Fase F7.
+  - Verifikasi: `npm run lint` (0 error, 0 warning), `npm run build` (Turbopack 12/12 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
 - [ ] **Fase F7 — Permissions & Roles per Aplikasi**
 - [ ] **Fase F8 — Manajemen User & Penugasan Akses**
 - [ ] **Fase F9 — Audit Logs & Dashboard**
@@ -85,12 +95,12 @@
    - Ukuran cookie session dijaga di bawah `4096 bytes` dengan tidak menduplikasi array `roles`/`permissions` di dalam cookie (diekstrak dari `accessToken` di sisi server).
    - Pemeriksaan kedaluwarsa & rotasi `refreshToken` wajib dilakukan di `proxy.ts` (atau Route Handler / Server Action) agar cookie baru selalu tertulis kembali ke browser (`Set-Cookie`) dan tidak memicu *Refresh Token Reuse Detection* saat render Server Component.
    - Penambahan fitur daftar user per aplikasi untuk aplikasi konsumen dan aksi bantuan reset password oleh admin dipisahkan ke perencanaan tersendiri.
-4. **Forwarded Headers & Reverse Proxy Trust (Fase F0):**
-   - `UseForwardedHeaders` dijalankan sebelum `UseRateLimiter` dan controller agar seluruh inspeksi IP (rate limiting publik dan audit log) melihat IP asli dari proxy tepercaya (`127.0.0.1`, `::1` atau konfigurasi di `appsettings.json`).
-   - Sumber yang tidak terdaftar di `KnownProxies`/`KnownIPNetworks` tidak dapat melakukan spoofing header `X-Forwarded-For`.
-5. **Pembersihan Template & Next.js 16 Compatibility (Fase F1):**
-   - Menggunakan `.npmrc` dengan `legacy-peer-deps=true` dan `package.json` overrides untuk menjembatani peer dependency `next-auth@5.0.0-beta.29` pada Next.js 16.
-   - Menghapus komponen demo yang tidak relevan (crypto, nft, charts demo, calendar, chat, email, marketplace, theme customizer) agar project ramping, cepat di-build, dan mematuhi aturan strict compiler React 19.
+4. **Keamanan API Key Sekali Tampil (Bagian 8.1):**
+   - Nilai `rawApiKey` dari pendaftaran aplikasi baru maupun rotasi kunci hanya ditampilkan satu kali pada komponen dialog modal `ApiKeyRevealModal` dan dibersihkan saat dialog ditutup.
+   - Tidak pernah disimpan ke dalam state global, URL parameter, localStorage, sessionStorage, maupun cookie.
+   - Backend hanya menyimpan hash SHA-256 dan prefix kunci `apiKeyPrefix`.
+5. **Proteksi Aplikasi Sistem `auth-admin`:**
+   - Aplikasi dengan Client ID `auth-admin` dikunci agar tidak dapat dinonaktifkan baik melalui validasi Server Action maupun switch antarmuka pengguna, selaras dengan aturan backend.
 
 ---
 
@@ -103,5 +113,5 @@
 ## 4. Langkah Berikutnya
 
 1. **Menunggu Instruksi User:**
-   - Melakukan commit untuk hasil pekerjaan **Fase F3, F4, & F5 (Autentikasi, Self-Service, & Profil/Password)**, atau
-   - Langsung melanjutkan ke **Fase F6 (Manajemen Aplikasi ClientApps & API Key di `/apps`)**.
+   - Melakukan commit untuk hasil pekerjaan **Fase F6 (Manajemen Aplikasi ClientApps & API Key)**, atau
+   - Langsung melanjutkan ke **Fase F7 (Permissions & Roles per Aplikasi)**.
