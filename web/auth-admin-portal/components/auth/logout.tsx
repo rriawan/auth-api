@@ -15,14 +15,23 @@ const Logout = () => {
     startTransition(async () => {
       try {
         toast.loading("Sedang keluar...", { id: "logout-toast" });
-        await doLogout();
+        const result = await doLogout();
+
+        if (result && "error" in result) {
+          toast.error(result.error || "Gagal keluar. Silakan coba kembali.", {
+            id: "logout-toast",
+          });
+          setLoading(false);
+          return;
+        }
+
         toast.success("Berhasil keluar.", { id: "logout-toast" });
+        window.location.href = "/auth/login";
       } catch (error) {
         console.error("Logout error:", error);
         toast.error("Gagal keluar. Silakan coba kembali.", {
           id: "logout-toast",
         });
-      } finally {
         setLoading(false);
       }
     });
@@ -32,8 +41,9 @@ const Logout = () => {
     <Button
       onClick={handleLogout}
       type="button"
-      className={`hover:text-red-600 flex items-center gap-3 py-0.5 text-neutral-900 dark:text-white text-base !px-0.5 cursor-pointer leading-[0] w-full justify-start hover:no-underline h-[25px] ${loading ? "text-red-600" : ""
-        }`}
+      className={`hover:text-red-600 flex items-center gap-3 py-0.5 text-neutral-900 dark:text-white text-base !px-0.5 cursor-pointer leading-[0] w-full justify-start hover:no-underline h-[25px] ${
+        loading ? "text-red-600" : ""
+      }`}
       variant="link"
       disabled={loading}
     >

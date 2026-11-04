@@ -30,13 +30,19 @@ export async function doLogout(): Promise<LogoutResponse> {
           );
         }
       } catch {
-        // Abaikan jika token gagal didecode
+        // Abaikan jika token gagal didecode atau backend tidak merespons
       }
     }
   } catch {
-    // Abaikan error jaringan saat logout
+    // Abaikan error pembacaan cookie saat logout
   }
 
-  await signOut({ redirectTo: "/auth/login" });
+  try {
+    // Bersihkan sesi cookie NextAuth lokal tanpa melempar NEXT_REDIRECT
+    await signOut({ redirect: false });
+  } catch {
+    // Abaikan jika ada internal redirect error
+  }
+
   return { success: true };
 }

@@ -11,16 +11,16 @@ public sealed record PagedResponse<T>(
 
 // 1. ClientApps & API Keys
 public sealed record CreateClientAppRequest(
-    [property: Required, MaxLength(100)] string ClientId,
-    [property: Required, MaxLength(200)] string Name,
-    [property: MaxLength(500)] string? Description = null,
-    [property: MaxLength(2000)] string? AllowedOrigins = null,
+    [Required, MaxLength(100)] string ClientId,
+    [Required, MaxLength(200)] string Name,
+    [MaxLength(500)] string? Description = null,
+    [MaxLength(2000)] string? AllowedOrigins = null,
     bool IsActive = true);
 
 public sealed record UpdateClientAppRequest(
-    [property: Required, MaxLength(200)] string Name,
-    [property: MaxLength(500)] string? Description,
-    [property: MaxLength(2000)] string? AllowedOrigins,
+    [Required, MaxLength(200)] string Name,
+    [MaxLength(500)] string? Description,
+    [MaxLength(2000)] string? AllowedOrigins,
     bool IsActive);
 
 public sealed record ClientAppDto(
@@ -44,16 +44,16 @@ public sealed record ClientAppWithRawKeyResponse(
 
 // 2. User Management
 public sealed record CreateUserRequest(
-    [property: Required, MaxLength(100)] string Username,
-    [property: Required, EmailAddress, MaxLength(256)] string Email,
-    [property: Required, MinLength(8), MaxLength(256)] string Password,
-    [property: Required, MaxLength(200)] string FullName,
+    [Required, MaxLength(100)] string Username,
+    [Required, EmailAddress, MaxLength(256)] string Email,
+    [Required, MinLength(8), MaxLength(256)] string Password,
+    [Required, MaxLength(200)] string FullName,
     bool IsActive = true,
     bool IsAccountVerified = true);
 
 public sealed record UpdateUserRequest(
-    [property: Required, EmailAddress, MaxLength(256)] string Email,
-    [property: Required, MaxLength(200)] string FullName,
+    [Required, EmailAddress, MaxLength(256)] string Email,
+    [Required, MaxLength(200)] string FullName,
     bool IsActive,
     bool IsAccountVerified);
 
@@ -83,12 +83,12 @@ public sealed record RevokeSessionsResponse(
 
 // 3. Permissions & Roles per ClientApp
 public sealed record CreatePermissionRequest(
-    [property: Required, MaxLength(150)] string Code,
-    [property: MaxLength(500)] string? Description = null);
+    [Required, MaxLength(150)] string Code,
+    [MaxLength(500)] string? Description = null);
 
 public sealed record UpdatePermissionRequest(
-    [property: Required, MaxLength(150)] string Code,
-    [property: MaxLength(500)] string? Description = null);
+    [Required, MaxLength(150)] string Code,
+    [MaxLength(500)] string? Description = null);
 
 public sealed record PermissionDto(
     Guid Id,
@@ -98,16 +98,16 @@ public sealed record PermissionDto(
     DateTime CreatedAtUtc);
 
 public sealed record CreateRoleRequest(
-    [property: Required, MaxLength(100)] string Name,
-    [property: MaxLength(500)] string? Description = null,
+    [Required, MaxLength(100)] string Name,
+    [MaxLength(500)] string? Description = null,
     IReadOnlyCollection<Guid>? PermissionIds = null);
 
 public sealed record UpdateRoleRequest(
-    [property: Required, MaxLength(100)] string Name,
-    [property: MaxLength(500)] string? Description = null);
+    [Required, MaxLength(100)] string Name,
+    [MaxLength(500)] string? Description = null);
 
 public sealed record SetRolePermissionsRequest(
-    [property: Required] IReadOnlyCollection<Guid> PermissionIds);
+    [Required] IReadOnlyCollection<Guid> PermissionIds);
 
 public sealed record RoleDto(
     Guid Id,
@@ -120,7 +120,7 @@ public sealed record RoleDto(
 
 // 4. User Access Assignment per App
 public sealed record SetUserAppRolesRequest(
-    [property: Required] IReadOnlyCollection<Guid> RoleIds);
+    [Required] IReadOnlyCollection<Guid> RoleIds);
 
 public sealed record UserAppRolesResponse(
     Guid UserId,
@@ -153,4 +153,3 @@ public sealed record AuditLogDto(
     string? IpAddress,
     string? UserAgent,
     string? DetailJson);
-
