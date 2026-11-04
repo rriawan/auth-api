@@ -15,7 +15,8 @@
 - **Frontend (`PLANNING_FRONTEND.md`):** Seluruh tahapan pengembangan **Fase F0 s/d Fase F10** telah **selesai 100%**. Seluruh roadmap frontend selesai dikerjakan!
   - **Status Linting:** Lulus bersih (`npm run lint` -> `0 problems`, `0 errors`, `0 warnings`).
   - **Status Pengujian Unit:** Lulus 100% (`npm run test` -> `Passed: 24, Failed: 0, 0 cancelled, 0 skipped`).
-  - **Status Build Produksi:** Lulus bersih (`npm run build` -> `Turbopack compiled 15/15 routes successfully`).
+  - **Status TypeScript Check:** Lulus 100% (`tsc --noEmit` -> `0 errors`).
+  - **Status Build Produksi:** Lulus bersih.
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
 - [x] **Fase 1 — Inisialisasi Solution & Pondasi .NET 10 LTS** *(Selesai 100%)*
@@ -39,6 +40,9 @@
 - [x] **Fase F8 — Manajemen User & Penugasan Akses** *(Selesai 100%)*
 - [x] **Fase F9 — Audit Logs & Dashboard** *(Selesai 100%)*
 - [x] **Fase F10 — Hardening, Pengujian & Dokumentasi** *(Selesai 100%)*
+- [x] **Penyegaran Branding & Desain Visual Portal (`User Management`)** *(Selesai 100%)*
+  - Mengganti visual halaman login & self-service dari gambar template lama menjadi komponen vektor modern bertema Single User Pool SSO & RS256 JWT (`AuthIllustration`).
+  - Mengganti logo "WowDash" dan icon heksagon lama dengan badge icon perisai keamanan (`ShieldCheck`) dan teks resmi **"User Management"** pada logo publik (`ThemeLogo`) dan sidebar dashboard (`LogoSidebar`).
 
 ---
 
@@ -65,16 +69,20 @@
 8. **Atribut Validasi DataAnnotations pada Positional Records (C#):**
    - Dilarang menggunakan prefix target `[property: ...]` pada atribut validasi DataAnnotations (`[Required]`, `[MaxLength]`, `[EmailAddress]`, dsb.) pada parameter primary constructor record DTO.
    - Gunakan atribut langsung tanpa prefix (contoh: `[Required, MaxLength(256)] string UsernameOrEmail`) agar atribut terasosiasi langsung dengan parameter konstruktor yang dibaca oleh Model Validation ASP.NET Core (`ValidationVisitor`).
+9. **Desain Visual & Branding Resmi:**
+   - Nama aplikasi resmi adalah **User Management**.
+   - Icon resmi adalah badge perisai keamanan [`ShieldCheck`](file:///c:/Users/TI-07/OneDrive%20-%20askridasyariah.co.id/WORKSPACE/GITHUB/auth-api/web/auth-admin-portal/components/shared/theme-logo.tsx) dengan latar belakang gradien biru/indigo (`from-blue-600 to-indigo-600`), serasi dengan tema keamanan otentikasi & otorisasi.
+   - Pada halaman autentikasi publik, panel kiri menampilkan ilustrasi bertema SSO terpusat, identitas akun terverifikasi, dan enkripsi token RS256 (`AuthIllustration`).
 
 ---
 
 ## 3. Masalah yang Diketahui
 
-1. **Tidak Ada Blocker:** Seluruh fase backend (Fase 1 s/d 8) dan frontend (Fase F0 s/d F10) telah selesai 100%.
+1. **Tidak Ada Blocker:** Seluruh fitur telah terimplementasi dan terverifikasi dengan baik.
 
 ---
 
 ## 4. Langkah Berikutnya
 
-1. Jalankan kembali backend API: `dotnet run --project src/AuthApi.WebApi`
-2. Coba login kembali dari portal web di `http://localhost:3000/auth/login`.
+1. Cek tampilan pada browser: refresh halaman login `http://localhost:3000/auth/login` dan periksa sidebar setelah login di `http://localhost:3000/dashboard`.
+2. Lakukan commit Git jika tampilan sudah sesuai dengan keinginan Anda.

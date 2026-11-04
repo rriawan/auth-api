@@ -1,27 +1,23 @@
+import AuthIllustration from "@/components/auth/auth-illustration";
 import ForgotPasswordComponent from "@/components/auth/forgot-password";
 import ThemeLogo from "@/components/shared/theme-logo";
-import AuthImage from "@/public/assets/images/auth/forgot-pass-img.png";
 import type { Metadata } from "next";
-import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Lupa Password | Auth Admin Portal",
-  description: "Permintaan reset password akun SSO",
+  title: "Lupa Password | User Management",
+  description: "Permintaan reset password akun SSO User Management",
 };
 
 export default function ForgotPasswordPage() {
   return (
     <section className="bg-white dark:bg-slate-900 flex flex-wrap min-h-screen">
-      {/* Left Image */}
+      {/* Left Illustration */}
       <div className="lg:w-1/2 hidden lg:block">
-        <div className="flex items-center justify-center h-screen flex-col">
-          <Image
-            src={AuthImage}
-            alt="Auth Illustration"
-            className="object-cover w-full h-full"
-            priority
-          />
-        </div>
+        <AuthIllustration
+          badge="Self-Service Pemulihan Akun"
+          title="Pemulihan Akses & Keamanan Akun"
+          subtitle="Proses reset password aman berbasis one-time hashed token untuk melindungi identitas Anda lintas aplikasi."
+        />
       </div>
 
       {/* Right Form */}
@@ -29,13 +25,15 @@ export default function ForgotPasswordPage() {
         <div className="lg:max-w-[464px] w-full mx-auto">
           {/* Logo and heading */}
           <div>
-            <div className="mb-2.5 inline-block max-w-[290px]">
+            <div className="mb-4 inline-block">
               <ThemeLogo />
             </div>
 
-            <h4 className="font-semibold mb-3 text-2xl">Lupa Password</h4>
-            <p className="mb-8 text-neutral-500 dark:text-neutral-300 text-sm">
-              Masukkan username atau email akun Anda. Kami akan mengirimkan tautan reset password.
+            <h4 className="font-semibold mb-2 text-2xl text-neutral-900 dark:text-neutral-100">
+              Lupa Password
+            </h4>
+            <p className="mb-8 text-neutral-500 dark:text-neutral-400 text-sm">
+              Masukkan username atau email akun Anda. Kami akan memproses tautan reset password.
             </p>
           </div>
 
