@@ -3,7 +3,7 @@
 > **Instruksi untuk Model AI:**  
 > Baca file ini bersama `AGENTS.md`, `PLANNING.md`, dan `PLANNING_FRONTEND.md` setiap kali memulai sesi baru. Perbarui file ini setiap kali menyelesaikan sebuah fase atau langkah penting agar sesi berikutnya dapat langsung melanjutkan tanpa kehilangan konteks.
 
-**Terakhir Diperbarui:** 2026-11-03
+**Terakhir Diperbarui:** 2026-11-04
 
 ---
 
@@ -12,8 +12,10 @@
 - **Backend (`PLANNING.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
   - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 11, Failed: 0, Skipped: 0`).
-- **Frontend (`PLANNING_FRONTEND.md`):** **Fase F0 s/d Fase F6** telah **selesai 100%**. Siap melanjutkan ke **Fase F7 (Permissions & Roles per Aplikasi)**.
-  - **Status Frontend:** Lulus bersih (`npm run lint` -> `0 problems`, `npm run build` -> `Turbopack compiled 12/12 routes successfully`).
+- **Frontend (`PLANNING_FRONTEND.md`):** Seluruh tahapan pengembangan **Fase F0 s/d Fase F10** telah **selesai 100%**. Seluruh roadmap frontend selesai dikerjakan!
+  - **Status Linting:** Lulus bersih (`npm run lint` -> `0 problems`, `0 errors`, `0 warnings`).
+  - **Status Pengujian Unit:** Lulus 100% (`npm run test` -> `Passed: 24, Failed: 0, 0 cancelled, 0 skipped`).
+  - **Status Build Produksi:** Lulus bersih (`npm run build` -> `Turbopack compiled 15/15 routes successfully`).
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
 - [x] **Fase 1 — Inisialisasi Solution & Pondasi .NET 10 LTS** *(Selesai 100%)*
@@ -75,13 +77,52 @@
   - Mengimplementasikan halaman detail `/apps/[appId]` (`app/(dashboard)/apps/[appId]/page.tsx`) dengan breadcrumbs, header ringkasan, dan 4 tab:
     - Tab *Informasi* (`components/apps/app-info-tab.tsx`): pembaruan nama, deskripsi, CORS origins, switch status aktif yang dikunci untuk `auth-admin`, serta tombol simpan berizin.
     - Tab *API Key & Integrasi* (`components/apps/app-api-key-tab.tsx`): tampilan prefix kunci aktif, snippet integrasi backend M2M, peringatan destruktif rotasi, dan dialog konfirmasi rotasi kunci yang otomatis menampilkan modal kunci baru.
-    - Tab *Permissions* (`components/apps/app-permissions-tab.tsx`): tampilan jumlah izin terdaftar dan placeholder informatif untuk Fase F7.
-    - Tab *Roles* (`components/apps/app-roles-tab.tsx`): tampilan jumlah peran terdaftar dan placeholder informatif untuk Fase F7.
+    - Tab *Permissions* & Tab *Roles*.
   - Verifikasi: `npm run lint` (0 error, 0 warning), `npm run build` (Turbopack 12/12 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
-- [ ] **Fase F7 — Permissions & Roles per Aplikasi**
-- [ ] **Fase F8 — Manajemen User & Penugasan Akses**
-- [ ] **Fase F9 — Audit Logs & Dashboard**
-- [ ] **Fase F10 — Hardening, Pengujian & Dokumentasi**
+- [x] **Fase F7 — Permissions & Roles per Aplikasi** *(Selesai 100%)*
+  - Memperbarui `lib/api/permissions.ts` dan `lib/api/roles.ts` agar parameter `token?: string` bersifat opsional (otomatis mengambil Bearer token dari sesi server jika tidak dikirim eksplisit).
+  - Mengimplementasikan Server Actions untuk Permissions (`components/apps/actions/permissions.ts`): `createPermissionAction`, `updatePermissionAction`, dan `deletePermissionAction` dengan proteksi `requirePermission('permissions.write')`, validasi Zod berpola `modul.aksi` (`createPermissionSchema`, `updatePermissionSchema`), penanganan konflik 409, dan `revalidatePath`.
+  - Mengimplementasikan Server Actions untuk Roles (`components/apps/actions/roles.ts`): `createRoleAction`, `updateRoleAction`, `deleteRoleAction`, dan `setRolePermissionsAction` dengan proteksi `requirePermission('roles.write')`, validasi Zod, serta proteksi terhadap `System Role` (melarang penghapusan dan perubahan nama `System Role`).
+  - Mengimplementasikan Tab *Permissions* (`components/apps/app-permissions-tab.tsx`) pada `/apps/[appId]`: tabel permission, pencarian instan, filter per prefix modul (`modul.*`), salin kode permission, dialog tambah/ubah permission, dan dialog konfirmasi penghapusan permission (dengan `autoFocus` pada aksi aman "Batal").
+  - Mengimplementasikan Tab *Roles* (`components/apps/app-roles-tab.tsx`) pada `/apps/[appId]`: tabel role dengan badge biru **System Role**, pencarian & filter tipe role (Semua/System Role/Custom), dialog tambah role (lengkap dengan pemilihan permission awal), dialog ubah role (input nama dikunci untuk `System Role`), tombol hapus yang dinonaktifkan untuk `System Role` beserta dialog konfirmasi hapus untuk custom role, serta dialog pemetaan permission berbentuk daftar checkbox yang dikelompokkan per modul (`Pilih Semua`, `Kosongkan`, `Pilih Modul Ini`).
+  - Memperbarui Server Component `app/(dashboard)/apps/[appId]/page.tsx` untuk memuat daftar `permissions` dan `roles` secara paralel (`Promise.allSettled`) dan meneruskannya ke komponen tab terkait.
+  - Verifikasi: `npm run lint` (0 error, 0 warning), `npm run build` (Turbopack 12/12 routes lulus bersih), dan `dotnet test` (11/11 tests lulus).
+- [x] **Fase F8 — Manajemen User & Penugasan Akses** *(Selesai 100%)*
+  - Memperbarui `lib/api/users.ts` dan `lib/api/user-app-roles.ts` agar parameter `token?: string` bersifat opsional dan menyelaraskan tipe balikan `usersApi.unlock` menjadi `Promise<AdminUserDto>` sesuai kontrak backend `AdminController.UnlockUser`.
+  - Mengimplementasikan Server Actions (`components/users/actions/users.ts`): `createUserAction` (`users.write`), `updateUserAction` (`users.write`), `unlockUserAction` (`users.unlock`), `revokeUserSessionsAction` (`users.revoke-sessions`), `getUserAppAccessDetailAction` (`users.read`), dan `setUserAppRolesAction` (`users.write`) lengkap dengan validasi Zod dan `revalidatePath`.
+  - Mengimplementasikan dialog pembuatan pengguna baru (`components/users/create-user-dialog.tsx`) dengan validasi username, email, nama lengkap, password + konfirmasi password, serta switch status aktif & verifikasi.
+  - Mengimplementasikan halaman `/users` (`app/(dashboard)/users/page.tsx`) dan tabel pengguna (`components/users/users-table.tsx`) dengan pencarian server-side (`?search=...`), pagination (`?page=...`), badge status konsisten (*Aktif* hijau, *Nonaktif* abu-abu, *Terkunci* merah, *Belum Verifikasi* kuning), ringkasan akses aplikasi (`appAssignments`), dan navigasi ke detail user.
+  - Mengimplementasikan halaman detail `/users/[userId]` (`app/(dashboard)/users/[userId]/page.tsx`) dengan 2 tab:
+    - Tab *Profil & Keamanan Akun* (`components/users/user-info-tab.tsx`): form edit profil & status, dialog konfirmasi saat menonaktifkan pengguna, kartu proteksi brute-force dengan tombol **Buka Kunci & Reset Counter** (`Unlock`), serta kartu **Paksa Logout Semua Sesi** (`Revoke Sessions`) dengan dialog konfirmasi destruktif (`autoFocus` pada aksi aman "Batal").
+    - Tab *Akses Aplikasi* (`components/users/user-app-access-tab.tsx`): ringkasan aplikasi yang sedang diakses user, pemilih aplikasi (`ClientApp`), daftar checkbox Role per aplikasi (lengkap dengan badge biru **System Role** & daftar kode permission), pratinjau realtime **Izin Efektif (Effective Permissions)**, serta tombol simpan penugasan role.
+  - Verifikasi: `npm run lint` (0 error, 0 warning) dan `npm run build` (Turbopack 14/14 routes lulus bersih).
+- [x] **Fase F9 — Audit Logs & Dashboard** *(Selesai 100%)*
+  - Memperbarui `lib/api/audit-logs.ts` agar parameter `token?: string` bersifat opsional dan menyelaraskan nama query parameter tanggal (`dateFrom` & `dateTo`) sesuai signature `AdminController.GetAuditLogs`.
+  - Mengimplementasikan katalog metadata 28 jenis `AuditEventType` (`components/audit-logs/audit-log-constants.ts`) beserta fungsi `prettyPrintDetailJson` untuk memformat payload JSON secara aman tanpa `dangerouslySetInnerHTML` (Bagian 8.6).
+  - Mengimplementasikan dialog detail log audit (`components/audit-logs/audit-log-detail-dialog.tsx`) yang menampilkan metadata lengkap (Log ID, EventType, Actor/User dengan tautan ke `/users/[userId]`, ClientApp dengan tautan ke `/apps/[appId]`, IP Address, User-Agent, dan blok `<pre><code>` JSON pretty-printed dengan tombol salin).
+  - Mengimplementasikan halaman `/audit-logs` (`app/(dashboard)/audit-logs/page.tsx`) dan tabel audit (`components/audit-logs/audit-logs-table.tsx`) dengan filter lengkap (`eventType`, `clientId`, `isSuccess`, `userId`, `dateFrom`, `dateTo`), pagination server-side, dan klik cepat filter per pengguna.
+  - Mengimplementasikan Dashboard utama (`app/(dashboard)/page.tsx`) yang memeriksa izin admin (`apps.read`, `users.read`, `audit-logs.read`) sebelum memanggil endpoint terkait dan menyembunyikan kartu/grafik bagi admin yang tidak memiliki permission terkait:
+    - Kartu statistik: Aplikasi Terdaftar (aktif/nonaktif), Total Pengguna SSO, Login Berhasil (24 Jam), dan Login Gagal / Lockout (24 Jam).
+    - Grafik **ApexCharts** (`components/dashboard/login-activity-chart.tsx`) untuk tren aktivitas login berhasil vs gagal selama 7 hari terakhir.
+    - Tabel **Aktivitas Keamanan Terbaru** (`components/dashboard/recent-audit-logs-card.tsx`) beserta dialog inspeksi detail JSON.
+  - Verifikasi: `npm run lint` (0 error, 0 warning) dan `npm run build` (Turbopack 15/15 routes lulus bersih).
+- [x] **Fase F10 — Hardening, Pengujian & Dokumentasi** *(Selesai 100%)*
+  - **Security Headers Hardening (`next.config.ts`):** Mengonfigurasi `Content-Security-Policy` (CSP) ketat (`default-src 'self'`, `frame-ancestors 'none'`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, dan `Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=()`.
+  - **Error & Loading UX:**
+    - Memperbarui komponen error boundary root (`app/error.tsx`), dashboard (`app/(dashboard)/error.tsx`), dan auth (`app/auth/error.tsx`) dengan styling kartu profesional, icon AlertTriangle, pesan Bahasa Indonesia informatif, tombol "Coba Lagi" (`reset()`), dan tautan navigasi aman.
+    - Membuat modul loading skeleton reusable (`components/shared/page-skeletons.tsx`): `TablePageSkeleton`, `DetailPageSkeleton`, dan `DashboardPageSkeleton`.
+    - Menerapkan file `loading.tsx` pada rute dashboard: `app/(dashboard)/loading.tsx`, `/apps/loading.tsx`, `/apps/[appId]/loading.tsx`, `/users/loading.tsx`, `/users/[userId]/loading.tsx`, `/audit-logs/loading.tsx`, dan `/profile/loading.tsx`, serta merapikan `app/loading.tsx` root dengan dukungan dark mode.
+  - **Pengujian Otomatis Minimal (Unit Testing):**
+    - Membuat suite pengujian unit native Node.js (`node --test`) di `web/auth-admin-portal/tests/`:
+      - `tests/validation.test.ts` (15 test): Menguji seluruh skema Zod (`auth.schema.ts`, `apps.schema.ts`, `permissions.schema.ts`, `roles.schema.ts`, `users.schema.ts`) termasuk panjang password 8-256 karakter, format `clientId`, pola permission `modul.aksi`, dan form user/role.
+      - `tests/errors.test.ts` (9 test): Menguji pemetaan RFC 9457 `ProblemDetails` ke kelas `ApiException`, helper status boolean (`isUnauthorized`, `isForbidden`, `isNotFound`, `isConflict`, `isRateLimited`, `isServerError`), dan format pesan error `getErrorMessage`.
+    - Menambahkan script `"test"` pada `package.json` (`npm run test`), lulus 24/24 tests (0 failures).
+  - **Dokumentasi Lengkap (`web/auth-admin-portal/README.md`):** Menyusun panduan menyeluruh mencakup arsitektur BFF, security highlights, tabel variabel lingkungan, panduan setup lokal bersama backend `auth-api` (.NET 10 LTS), dokumentasi perintah (`npm run dev`, `build`, `lint`, `test`), matriks hak akses/permissions, dan struktur direktori.
+  - **Verifikasi Akhir:**
+    - `npm run lint` -> **Lulus bersih** (`0 errors, 0 warnings`).
+    - `npm run test` -> **Lulus 100%** (24/24 unit tests lulus).
+    - `npm run build` -> **Lulus bersih** (Turbopack compiled 15/15 routes successfully).
+    - `dotnet test AuthApi.sln` -> **Lulus 100%** (11/11 tests lulus).
 
 ---
 
@@ -99,19 +140,23 @@
    - Nilai `rawApiKey` dari pendaftaran aplikasi baru maupun rotasi kunci hanya ditampilkan satu kali pada komponen dialog modal `ApiKeyRevealModal` dan dibersihkan saat dialog ditutup.
    - Tidak pernah disimpan ke dalam state global, URL parameter, localStorage, sessionStorage, maupun cookie.
    - Backend hanya menyimpan hash SHA-256 dan prefix kunci `apiKeyPrefix`.
-5. **Proteksi Aplikasi Sistem `auth-admin`:**
+5. **Proteksi Aplikasi Sistem `auth-admin` & System Roles:**
    - Aplikasi dengan Client ID `auth-admin` dikunci agar tidak dapat dinonaktifkan baik melalui validasi Server Action maupun switch antarmuka pengguna, selaras dengan aturan backend.
+   - Role dengan `isSystemRole = true` ditandai dengan badge biru **System Role**, serta tombol hapus dan input ubah nama dinonaktifkan di UI dan divalidasi di Server Action.
+6. **Keamanan Tampilan Audit Log (Bagian 8.6):**
+   - Payload `detailJson` pada Audit Log ditampilkan sebagai teks terformat (`JSON.stringify(..., null, 2)`) di dalam elemen `<pre><code>` tanpa `dangerouslySetInnerHTML`.
+7. **Pengujian Unit Tanpa Dependensi Berat (Fase F10):**
+   - Pengujian unit skema Zod dan parser ProblemDetails dijalankan menggunakan Node.js native test runner (`node --test`), menghasilkan eksekusi sangat cepat (< 300ms) tanpa dependensi testing framework eksternal.
 
 ---
 
 ## 3. Masalah yang Diketahui
 
-1. **Tidak Ada Blocker:** Baik backend (.NET 10) maupun frontend (Next.js 16) lulus build dan lint 100%.
+1. **Tidak Ada Blocker:** Seluruh fase backend (Fase 1 s/d 8) dan frontend (Fase F0 s/d F10) telah selesai 100%. Seluruh pengujian otomatis backend (11 tests) dan frontend (24 tests) serta build produksi (Turbopack 15/15 routes) lulus bersih.
 
 ---
 
 ## 4. Langkah Berikutnya
 
 1. **Menunggu Instruksi User:**
-   - Melakukan commit untuk hasil pekerjaan **Fase F6 (Manajemen Aplikasi ClientApps & API Key)**, atau
-   - Langsung melanjutkan ke **Fase F7 (Permissions & Roles per Aplikasi)**.
+   - Melakukan commit ke Git lokal dan push ke remote branch `feature/fase-f7-permissions-and-roles` (atau branch baru), lalu membuat Pull Request (PR) ke `main`.

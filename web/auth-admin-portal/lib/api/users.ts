@@ -4,7 +4,6 @@ import { apiFetch } from "./client";
 import {
   AdminUserDto,
   CreateUserRequest,
-  MessageResponse,
   PagedResponse,
   RevokeSessionsResponse,
   UpdateUserRequest,
@@ -19,7 +18,7 @@ export interface UsersQuery {
 export const usersApi = {
   getAll: (
     query: UsersQuery = {},
-    token: string
+    token?: string
   ): Promise<PagedResponse<AdminUserDto>> => {
     const params = new URLSearchParams();
     if (query.search) params.set("search", query.search);
@@ -35,13 +34,13 @@ export const usersApi = {
     });
   },
 
-  getById: (id: string, token: string): Promise<AdminUserDto> =>
+  getById: (id: string, token?: string): Promise<AdminUserDto> =>
     apiFetch<AdminUserDto>(`/api/v1/admin/users/${encodeURIComponent(id)}`, {
       method: "GET",
       token,
     }),
 
-  create: (request: CreateUserRequest, token: string): Promise<AdminUserDto> =>
+  create: (request: CreateUserRequest, token?: string): Promise<AdminUserDto> =>
     apiFetch<AdminUserDto>("/api/v1/admin/users", {
       method: "POST",
       body: request,
@@ -51,7 +50,7 @@ export const usersApi = {
   update: (
     id: string,
     request: UpdateUserRequest,
-    token: string
+    token?: string
   ): Promise<AdminUserDto> =>
     apiFetch<AdminUserDto>(`/api/v1/admin/users/${encodeURIComponent(id)}`, {
       method: "PUT",
@@ -59,8 +58,8 @@ export const usersApi = {
       token,
     }),
 
-  unlock: (id: string, token: string): Promise<MessageResponse> =>
-    apiFetch<MessageResponse>(
+  unlock: (id: string, token?: string): Promise<AdminUserDto> =>
+    apiFetch<AdminUserDto>(
       `/api/v1/admin/users/${encodeURIComponent(id)}/unlock`,
       {
         method: "POST",
@@ -70,7 +69,7 @@ export const usersApi = {
 
   revokeSessions: (
     id: string,
-    token: string
+    token?: string
   ): Promise<RevokeSessionsResponse> =>
     apiFetch<RevokeSessionsResponse>(
       `/api/v1/admin/users/${encodeURIComponent(id)}/revoke-sessions`,
@@ -80,4 +79,3 @@ export const usersApi = {
       }
     ),
 };
-

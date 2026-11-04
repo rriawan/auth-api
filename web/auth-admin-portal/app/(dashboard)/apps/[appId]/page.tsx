@@ -15,7 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { appsApi } from "@/lib/api/apps";
-import { ClientAppDto } from "@/lib/api/types";
+import { getErrorMessage } from "@/lib/api/errors";
+import { permissionsApi } from "@/lib/api/permissions";
+import { rolesApi } from "@/lib/api/roles";
+import { ClientAppDto, PermissionDto, RoleDto } from "@/lib/api/types";
 import {
   AppWindow,
   ArrowLeft,
@@ -108,6 +111,29 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
     );
   }
 
+  // Ambil daftar Permissions dan Roles untuk aplikasi ini secara paralel
+  let permissions: PermissionDto[] = [];
+  let permissionsError: string | null = null;
+  let roles: RoleDto[] = [];
+  let rolesError: string | null = null;
+
+  const [permissionsResult, rolesResult] = await Promise.allSettled([
+    permissionsApi.getAll(appId),
+    rolesApi.getAll(appId),
+  ]);
+
+  if (permissionsResult.status === "fulfilled") {
+    permissions = permissionsResult.value;
+  } else {
+    permissionsError = getErrorMessage(permissionsResult.reason);
+  }
+
+  if (rolesResult.status === "fulfilled") {
+    roles = rolesResult.value;
+  } else {
+    rolesError = getErrorMessage(rolesResult.reason);
+  }
+
   const isSystemApp = app.clientId.toLowerCase() === "auth-admin";
 
   const formatDate = (dateStr: string) => {
@@ -183,7 +209,10 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                   Aktif
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="gap-1 text-xs text-muted-foreground">
+                <Badge
+                  variant="secondary"
+                  className="gap-1 text-xs text-muted-foreground"
+                >
                   <XCircle className="w-3 h-3" />
                   Nonaktif
                 </Badge>
@@ -191,7 +220,8 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               Didaftarkan pada {formatDate(app.createdAtUtc)}
-              {app.updatedAtUtc && ` • Diperbarui pada ${formatDate(app.updatedAtUtc)}`}
+              {app.updatedAtUtc &&
+                ` • Diperbarui pada ${formatDate(app.updatedAtUtc)}`}
             </p>
           </div>
         </div>
@@ -227,14 +257,22 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
         </TabsContent>
 
         <TabsContent value="permissions">
-          <AppPermissionsTab app={app} />
+          <AppPermissionsTab
+            app={app}
+            initialPermissions={permissions}
+            fetchError={permissionsError}
+          />
         </TabsContent>
 
         <TabsContent value="roles">
-          <AppRolesTab app={app} />
+          <AppRolesTab
+            app={app}
+            initialRoles={roles}
+            availablePermissions={permissions}
+            fetchError={rolesError}
+          />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
-

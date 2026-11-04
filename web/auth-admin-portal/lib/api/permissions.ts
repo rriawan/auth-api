@@ -9,7 +9,7 @@ import {
 } from "./types";
 
 export const permissionsApi = {
-  getAll: (appId: string, token: string): Promise<PermissionDto[]> =>
+  getAll: (appId: string, token?: string): Promise<PermissionDto[]> =>
     apiFetch<PermissionDto[]>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/permissions`,
       {
@@ -21,7 +21,7 @@ export const permissionsApi = {
   getById: (
     appId: string,
     permissionId: string,
-    token: string
+    token?: string
   ): Promise<PermissionDto> =>
     apiFetch<PermissionDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/permissions/${encodeURIComponent(permissionId)}`,
@@ -34,7 +34,7 @@ export const permissionsApi = {
   create: (
     appId: string,
     request: CreatePermissionRequest,
-    token: string
+    token?: string
   ): Promise<PermissionDto> =>
     apiFetch<PermissionDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/permissions`,
@@ -49,7 +49,7 @@ export const permissionsApi = {
     appId: string,
     permissionId: string,
     request: UpdatePermissionRequest,
-    token: string
+    token?: string
   ): Promise<PermissionDto> =>
     apiFetch<PermissionDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/permissions/${encodeURIComponent(permissionId)}`,
@@ -63,7 +63,7 @@ export const permissionsApi = {
   delete: (
     appId: string,
     permissionId: string,
-    token: string
+    token?: string
   ): Promise<MessageResponse> =>
     apiFetch<MessageResponse>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/permissions/${encodeURIComponent(permissionId)}`,
@@ -73,4 +73,3 @@ export const permissionsApi = {
       }
     ),
 };
-

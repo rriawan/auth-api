@@ -7,7 +7,7 @@ export const userAppRolesApi = {
   getRoles: (
     userId: string,
     clientAppId: string,
-    token: string
+    token?: string
   ): Promise<UserAppRolesResponse> =>
     apiFetch<UserAppRolesResponse>(
       `/api/v1/admin/users/${encodeURIComponent(userId)}/apps/${encodeURIComponent(clientAppId)}/roles`,
@@ -21,7 +21,7 @@ export const userAppRolesApi = {
     userId: string,
     clientAppId: string,
     request: SetUserAppRolesRequest,
-    token: string
+    token?: string
   ): Promise<UserAppRolesResponse> =>
     apiFetch<UserAppRolesResponse>(
       `/api/v1/admin/users/${encodeURIComponent(userId)}/apps/${encodeURIComponent(clientAppId)}/roles`,
@@ -32,4 +32,3 @@ export const userAppRolesApi = {
       }
     ),
 };
-

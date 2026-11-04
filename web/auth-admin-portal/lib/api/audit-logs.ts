@@ -6,7 +6,7 @@ import { AuditLogDto, AuditLogFilterQuery, PagedResponse } from "./types";
 export const auditLogsApi = {
   getAll: (
     query: AuditLogFilterQuery = {},
-    token: string
+    token?: string
   ): Promise<PagedResponse<AuditLogDto>> => {
     const params = new URLSearchParams();
     if (query.userId) params.set("userId", query.userId);
@@ -15,8 +15,8 @@ export const auditLogsApi = {
     if (query.isSuccess !== undefined && query.isSuccess !== null) {
       params.set("isSuccess", query.isSuccess.toString());
     }
-    if (query.dateFromUtc) params.set("dateFromUtc", query.dateFromUtc);
-    if (query.dateToUtc) params.set("dateToUtc", query.dateToUtc);
+    if (query.dateFromUtc) params.set("dateFrom", query.dateFromUtc);
+    if (query.dateToUtc) params.set("dateTo", query.dateToUtc);
     if (query.page) params.set("page", query.page.toString());
     if (query.pageSize) params.set("pageSize", query.pageSize.toString());
 
@@ -29,4 +29,3 @@ export const auditLogsApi = {
     });
   },
 };
-
