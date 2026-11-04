@@ -1,7 +1,7 @@
 # STATUS.md — Catatan Progres & Memori Kerja `auth-api`
 
 > **Instruksi untuk Model AI:**  
-> Baca file ini bersama `AGENTS.md`, `PLANNING.md`, dan `PLANNING_FRONTEND.md` setiap kali memulai sesi baru. Perbarui file ini setiap kali menyelesaikan sebuah fase atau langkah penting agar sesi berikutnya dapat langsung melanjutkan tanpa kehilangan konteks.
+> Baca file ini bersama `AGENTS.md`, `PLANNING.md`, `PLANNING_FRONTEND.md`, `BACKEND_DOC.md`, dan `FRONTEND_DOC.md` setiap kali memulai sesi baru. Perbarui file ini setiap kali menyelesaikan sebuah fase atau langkah penting agar sesi berikutnya dapat langsung melanjutkan tanpa kehilangan konteks.
 
 **Terakhir Diperbarui:** 2026-11-04
 
@@ -9,14 +9,16 @@
 
 ## 1. Sedang Dikerjakan
 
-- **Backend (`PLANNING.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
+- **Backend (`PLANNING.md` & `BACKEND_DOC.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
   - **Status Pengujian Otomatis:** Lulus 100% (`dotnet test AuthApi.sln` -> `Passed: 11, Failed: 0, Skipped: 0`).
-- **Frontend (`PLANNING_FRONTEND.md`):** Seluruh tahapan pengembangan **Fase F0 s/d Fase F10** telah **selesai 100%**. Seluruh roadmap frontend selesai dikerjakan!
+  - **Dokumentasi Endpoint:** Lengkap dan terdokumentasi di [`BACKEND_DOC.md`](./BACKEND_DOC.md).
+- **Frontend (`PLANNING_FRONTEND.md` & `FRONTEND_DOC.md`):** Seluruh tahapan pengembangan **Fase F0 s/d Fase F10** telah **selesai 100%**.
   - **Status Linting:** Lulus bersih (`npm run lint` -> `0 problems`, `0 errors`, `0 warnings`).
   - **Status Pengujian Unit:** Lulus 100% (`npm run test` -> `Passed: 24, Failed: 0, 0 cancelled, 0 skipped`).
   - **Status TypeScript Check:** Lulus 100% (`tsc --noEmit` -> `0 errors`).
   - **Status Build Produksi:** Lulus bersih.
+  - **Dokumentasi UI:** Lengkap dan terdokumentasi di [`FRONTEND_DOC.md`](./FRONTEND_DOC.md).
 
 ### A. Ringkasan Progres Fase Backend (`PLANNING.md`)
 - [x] **Fase 1 — Inisialisasi Solution & Pondasi .NET 10 LTS** *(Selesai 100%)*
@@ -43,6 +45,8 @@
 - [x] **Penyegaran Branding & Desain Visual Portal (`User Management`)** *(Selesai 100%)*
   - Mengganti visual halaman login & self-service dari gambar template lama menjadi komponen vektor modern bertema Single User Pool SSO & RS256 JWT (`AuthIllustration`).
   - Mengganti logo "WowDash" dan icon heksagon lama dengan badge icon perisai keamanan (`ShieldCheck`) dan teks resmi **"User Management"** pada logo publik (`ThemeLogo`) dan sidebar dashboard (`LogoSidebar`).
+- [x] **Hardening Produksi & Otorisasi Host NextAuth v5:**
+  - Menambahkan opsi `trustHost: true` dan `secret` eksplisit di `auth.ts` untuk mendukung deployment Windows Server / IP LAN tanpa error `UntrustedHost`.
 
 ---
 
@@ -54,7 +58,7 @@
    - Ditempatkan secara monorepo pada folder `web/auth-admin-portal` menggunakan **Next.js 16 (App Router) + React 19 + Tailwind CSS v4 + shadcn/ui** mengacu pada `rriawan/TEMPLATE_NEXT`.
    - Menggunakan pola **BFF (Backend-for-Frontend)** dengan **NextAuth v5 Credentials Provider** (`clientId = auth-admin`).
    - Ukuran cookie session dijaga di bawah `4096 bytes` dengan tidak menduplikasi array `roles`/`permissions` di dalam cookie (diekstrak dari `accessToken` di sisi server).
-   - Pemeriksaan kedaluwarsa & rotasi `refreshToken` wajib dilakukan di `proxy.ts` (atau Route Handler / Server Action) agar cookie baru selalu tertulis kembali ke browser (`Set-Cookie`) dan tidak memicu *Refresh Token Reuse Detection* saat render Server Component.
+   - Menetapkan `trustHost: true` eksplisit di `auth.ts` untuk deployment intranet/IP lokal.
 4. **Keamanan API Key Sekali Tampil (Bagian 8.1):**
    - Nilai `rawApiKey` dari pendaftaran aplikasi baru maupun rotasi kunci hanya ditampilkan satu kali pada komponen dialog modal `ApiKeyRevealModal` dan dibersihkan saat dialog ditutup.
    - Tidak pernah disimpan ke dalam state global, URL parameter, localStorage, sessionStorage, maupun cookie.
@@ -68,11 +72,10 @@
    - Pengujian unit skema Zod dan parser ProblemDetails dijalankan menggunakan Node.js native test runner (`node --test`), menghasilkan eksekusi sangat cepat (< 300ms) tanpa dependensi testing framework eksternal.
 8. **Atribut Validasi DataAnnotations pada Positional Records (C#):**
    - Dilarang menggunakan prefix target `[property: ...]` pada atribut validasi DataAnnotations (`[Required]`, `[MaxLength]`, `[EmailAddress]`, dsb.) pada parameter primary constructor record DTO.
-   - Gunakan atribut langsung tanpa prefix (contoh: `[Required, MaxLength(256)] string UsernameOrEmail`) agar atribut terasosiasi langsung dengan parameter konstruktor yang dibaca oleh Model Validation ASP.NET Core (`ValidationVisitor`).
-9. **Desain Visual & Branding Resmi:**
-   - Nama aplikasi resmi adalah **User Management**.
-   - Icon resmi adalah badge perisai keamanan [`ShieldCheck`](file:///c:/Users/TI-07/OneDrive%20-%20askridasyariah.co.id/WORKSPACE/GITHUB/auth-api/web/auth-admin-portal/components/shared/theme-logo.tsx) dengan latar belakang gradien biru/indigo (`from-blue-600 to-indigo-600`), serasi dengan tema keamanan otentikasi & otorisasi.
-   - Pada halaman autentikasi publik, panel kiri menampilkan ilustrasi bertema SSO terpusat, identitas akun terverifikasi, dan enkripsi token RS256 (`AuthIllustration`).
+9. **Dokumentasi Lengkap:**
+   - [`BACKEND_DOC.md`](./BACKEND_DOC.md): Referensi teknis seluruh endpoint backend untuk pengembang / AI model masa depan.
+   - [`FRONTEND_DOC.md`](./FRONTEND_DOC.md): Referensi arsitektur, halaman, pola BFF, dan komponen antarmuka pengguna portal web.
+   - [`INTEGRATION_GUIDE.md`](./INTEGRATION_GUIDE.md): Panduan integrasi step-by-step untuk aplikasi konsumen baru.
 
 ---
 
@@ -84,5 +87,4 @@
 
 ## 4. Langkah Berikutnya
 
-1. Cek tampilan pada browser: refresh halaman login `http://localhost:3000/auth/login` dan periksa sidebar setelah login di `http://localhost:3000/dashboard`.
-2. Lakukan commit Git jika tampilan sudah sesuai dengan keinginan Anda.
+1. Lakukan commit Git untuk menyimpan `BACKEND_DOC.md`, `FRONTEND_DOC.md`, dan pembaruan `auth.ts`.
