@@ -10,7 +10,7 @@ import {
 } from "./types";
 
 export const rolesApi = {
-  getAll: (appId: string, token: string): Promise<RoleDto[]> =>
+  getAll: (appId: string, token?: string): Promise<RoleDto[]> =>
     apiFetch<RoleDto[]>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/roles`,
       {
@@ -22,7 +22,7 @@ export const rolesApi = {
   getById: (
     appId: string,
     roleId: string,
-    token: string
+    token?: string
   ): Promise<RoleDto> =>
     apiFetch<RoleDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/roles/${encodeURIComponent(roleId)}`,
@@ -35,7 +35,7 @@ export const rolesApi = {
   create: (
     appId: string,
     request: CreateRoleRequest,
-    token: string
+    token?: string
   ): Promise<RoleDto> =>
     apiFetch<RoleDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/roles`,
@@ -50,7 +50,7 @@ export const rolesApi = {
     appId: string,
     roleId: string,
     request: UpdateRoleRequest,
-    token: string
+    token?: string
   ): Promise<RoleDto> =>
     apiFetch<RoleDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/roles/${encodeURIComponent(roleId)}`,
@@ -64,7 +64,7 @@ export const rolesApi = {
   delete: (
     appId: string,
     roleId: string,
-    token: string
+    token?: string
   ): Promise<MessageResponse> =>
     apiFetch<MessageResponse>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/roles/${encodeURIComponent(roleId)}`,
@@ -78,7 +78,7 @@ export const rolesApi = {
     appId: string,
     roleId: string,
     request: SetRolePermissionsRequest,
-    token: string
+    token?: string
   ): Promise<RoleDto> =>
     apiFetch<RoleDto>(
       `/api/v1/admin/apps/${encodeURIComponent(appId)}/roles/${encodeURIComponent(roleId)}/permissions`,
@@ -89,4 +89,3 @@ export const rolesApi = {
       }
     ),
 };
-

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { passwordRule } from "./auth.schema";
+import { passwordRule } from "./auth.schema.ts";
 
 export const createUserSchema = z.object({
   username: z
