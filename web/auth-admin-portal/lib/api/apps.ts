@@ -9,13 +9,13 @@ import {
 } from "./types";
 
 export const appsApi = {
-  getAll: (token: string): Promise<ClientAppDto[]> =>
+  getAll: (token?: string): Promise<ClientAppDto[]> =>
     apiFetch<ClientAppDto[]>("/api/v1/admin/apps", {
       method: "GET",
       token,
     }),
 
-  getById: (id: string, token: string): Promise<ClientAppDto> =>
+  getById: (id: string, token?: string): Promise<ClientAppDto> =>
     apiFetch<ClientAppDto>(`/api/v1/admin/apps/${encodeURIComponent(id)}`, {
       method: "GET",
       token,
@@ -23,7 +23,7 @@ export const appsApi = {
 
   create: (
     request: CreateClientAppRequest,
-    token: string
+    token?: string
   ): Promise<ClientAppWithRawKeyResponse> =>
     apiFetch<ClientAppWithRawKeyResponse>("/api/v1/admin/apps", {
       method: "POST",
@@ -34,7 +34,7 @@ export const appsApi = {
   update: (
     id: string,
     request: UpdateClientAppRequest,
-    token: string
+    token?: string
   ): Promise<ClientAppDto> =>
     apiFetch<ClientAppDto>(`/api/v1/admin/apps/${encodeURIComponent(id)}`, {
       method: "PUT",
@@ -44,7 +44,7 @@ export const appsApi = {
 
   rotateKey: (
     id: string,
-    token: string
+    token?: string
   ): Promise<ClientAppWithRawKeyResponse> =>
     apiFetch<ClientAppWithRawKeyResponse>(
       `/api/v1/admin/apps/${encodeURIComponent(id)}/rotate-key`,
