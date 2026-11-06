@@ -22,6 +22,8 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeScheduleWriter>(provider => provider.GetRequiredService<EmployeePlacementService>());
         services.AddScoped<IEmployeeProfileService, EmployeeProfileService>();
         services.AddScoped<IEmployeeQueryService, EmployeeQueryService>();
+        services.AddScoped<IEmployeeLifecycleService, EmployeeLifecycleService>();
+        services.AddScoped<IEmploymentAccessGate, EmploymentAccessGate>();
         services.AddScoped<ISelfOrganizationProfileService, SelfOrganizationProfileService>();
         services.AddScoped<IOrganizationAdminService, OrganizationAdminService>();
         services.AddScoped<IOrganizationQueryService, OrganizationQueryService>();
