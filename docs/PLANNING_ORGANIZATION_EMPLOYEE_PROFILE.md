@@ -189,8 +189,8 @@ Seluruh tabel berikut adalah Recommendation baru, kecuali `Users` dan tabel RBAC
 | `PositionVersions` | Id, PositionId FK, Name, LevelId FK, Track, IsUnitHead, ReportsToPositionId nullable FK, MaxIncumbents nullable, IsActive, rentang efektif |
 | `Employees` | Id, EmployeeNumber unique, EmployeeFullName, RowVersion, CreatedAtUtc, UpdatedAtUtc |
 | `EmployeeStatuses` | Id, EmployeeId FK, StatusCode, rentang efektif, alasan; katalog status final menunggu D-02 |
-| `EmployeePositions` | Id, EmployeeId FK, PositionId FK, IsPrimary, rentang efektif, ChangeReason, DecisionReference, RecordState |
-| `EmployeeActingAssignments` | Id, EmployeeId FK, SourceEmployeePositionId FK, TargetPositionId FK, Type PLH/PLT, rentang efektif, DecisionReference, RecordState |
+| `EmployeePositions` | Id row revisi, AssignmentKey logis, EmployeeId FK, PositionId FK, IsPrimary, rentang efektif, ChangeReason, DecisionReference, RecordState, RevisionNumber dan superseded metadata |
+| `EmployeeActingAssignments` | Id row revisi, AssignmentKey logis, EmployeeId FK, SourceEmployeePositionId FK revisi definitif milik pegawai yang sama, TargetPositionId FK, Type PLH/PLT, rentang efektif, DecisionReference, RecordState dan metadata revisi |
 | `UserEmployeeLinks` | UserId PK/FK, EmployeeId unique FK, LinkedAtUtc, LinkedByUserId; hubungan opsional 1:1 |
 | `StructureTemplates` | Id, ClassificationCode FK, Version, State, catatan; unique classification/version |
 | `TemplateOrgUnits` | Id, TemplateId FK, UnitCode, ParentTemplateOrgUnitId, UnitType, Name |
@@ -200,6 +200,8 @@ Seluruh tabel berikut adalah Recommendation baru, kecuali `Users` dan tabel RBAC
 Identitas `OrgUnits.OfficeId` dan `Positions.OrgUnitId` tidak dipindahkan ke kantor/unit lain secara in-place. Reorganisasi yang memindahkan kepemilikan membuat identitas baru dan menutup yang lama; nama, parent, klasifikasi, serta garis pelaporan menggunakan versi efektif. Ini menjaga referensi historis tetap bermakna.
 
 Semua record yang dapat dikoreksi menyimpan Created/Updated UTC, actor, alasan, dan revision/RowVersion. Versi efektif memisahkan waktu berlaku bisnis dari waktu input. Untuk koreksi, record lama ditandai superseded melalui metadata revisi dan disimpan; query bisnis hanya memakai revisi current. Riwayat link akun juga diaudit dengan snapshot old/new. Tidak perlu SQL temporal table pada tahap awal; jika dipilih kemudian, temporal tidak menggantikan tanggal efektif bisnis.
+
+Ketentuan implementasi P2A: satu AssignmentKey memiliki satu row revisi current, dengan unique (AssignmentKey, RevisionNumber). DRAFT hanya untuk assignment baru; jangan menyupersede penempatan confirmed dengan draft revisi. Revisi confirmed dipublikasikan atomik pada P2B, termasuk penanganan seluruh acting current yang menunjuk row sumber lama. Validasi kapasitas harus menggunakan timeline versi posisi, bukan kapasitas saat ini saja. Detail langkah ada di [panduan P2A](ORGANIZATION_P2A_EMPLOYEE_FOUNDATION.md).
 
 ### 6.2 ERD
 
@@ -494,16 +496,30 @@ Tes InMemory hanya memverifikasi use-case. Constraint SQL Server, transaction is
 
 ## 14. Keputusan yang perlu dikonfirmasi
 
+### 14.1 Keputusan pengguna pada awal implementasi
+
+Pada 6 November 2026 pengguna mengonfirmasi:
+
+- **D-01 disetujui:** master pegawai dikelola di auth-api, hubungan akun–pegawai opsional 1:1, nama tampilan akun dibedakan dari nama resmi pegawai.
+- **D-03 disetujui:** zona waktu Asia/Jakarta; awal periode inklusif, akhir eksklusif; tanggal resign adalah hari pertama akun tidak boleh digunakan; koreksi tanggal lampau ditunda dari rilis awal.
+- **D-02 disetujui setelah provisioning kantor:** rilis awal ACTIVE/RESIGNED; resign efektif menolak login/refresh; aktivasi kembali manual; role dipertahankan; unlink/relink ditolak bila ada resign berlaku atau terjadwal.
+- **D-04 disetujui:** pimpinan maksimal satu pemegang definitif; Pelaksana multipegawai; kapasitas fungsional dikonfigurasi per posisi; satu jabatan utama dengan rangkap definitif tambahan; Plh./Plt. wajib referensi SK dan periode, tanpa perbedaan permission otomatis.
+- **Scope awal D-05 disetujui:** mulai empat template operasional (CAB-I, CAB-II, CAB-III, PEMASAR) sebagai DRAFT. Struktur pusat, hubungan antarkantor dan pemetaan level Kepala Cabang/Kepala Pemasar ditunda sampai ada data resmi. Kode unit/posisi dalam katalog draft adalah kode teknis usulan, bukan klaim kode resmi perusahaan; semua LevelId template awal null sampai master level disahkan.
+- **D-06 disetujui:** hak pegawai/organisasi granular dan hanya untuk SuperAdmin internal pada rilis awal; riwayat pegawai memakai permission terpisah; directory lintas user ditunda (detail pada tabel 14.2).
+- D-05 masih parsial, D-07 dan D-08 belum diputuskan. P1/P0 keseluruhan tidak ditandai selesai sebelum gate terkait terpenuhi. P1A schema/master kantor telah diterapkan pengguna dengan hasil provisioning 5 klasifikasi, 28 kantor, 28 versi awal.
+
+### 14.2 Daftar keputusan dan gate
+
 Tanda blocking berarti fase terkait berhenti sebelum mengimplementasikan perilakunya; bagian independen tetap dapat direncanakan. Recommendation bukan persetujuan otomatis karena dokumen dibuat.
 
 | ID | Keputusan dan rekomendasi awal | Gate |
 |---|---|---|
-| D-01 | Siapa pemilik master pegawai terhadap HRIS; apakah satu pegawai satu akun; otoritas nama akun vs pegawai. Usulan awal pengelolaan pusat, link opsional 1:1, nama dibedakan | Blocking P2 dan edit profil |
-| D-02 | Katalog status, resign/rehire, akun khusus, larangan bypass unlink, proses penonaktifan. Usulan status efektif membatasi login/refresh tanpa menghapus role | Blocking status/lifecycle P2/P4 |
-| D-03 | Zona waktu, batas akhir tanggal, tanggal resign terakhir bekerja vs hari mulai nonaktif, dan perubahan retroaktif | Blocking penyimpanan periode P1/P2 |
-| D-04 | Rangkap definitif yang sah, beda Plh./Plt., dasar penugasan, kapasitas pimpinan/fungsional, dan transisi overlap | Blocking validasi assignment P2 |
-| D-05 | Struktur pusat resmi, kode unit/posisi/level, hubungan antarkantor, perubahan kelas dan mekanisme reorganisasi | Blocking pengisian struktur yang belum tersedia; master 28 kantor tetap dapat disiapkan |
-| D-06 | Siapa boleh membaca profil/history; pemisahan admin HR dan teknis; kebutuhan directory lintas user untuk konsumen | Blocking hak endpoint/admin P3; directory ditunda |
+| D-01 | Disetujui pengguna 6 November 2026: master di auth-api, link opsional 1:1, nama akun dan pegawai dibedakan | Terpenuhi untuk P2 dan edit profil |
+| D-02 | Disetujui pengguna: ACTIVE/RESIGNED, resign efektif menolak login/refresh, aktivasi kembali manual, role dipertahankan, larangan unlink/relink saat resign berlaku/terjadwal | Terpenuhi untuk baseline P2; operasional scheduler/SLA tetap D-07 sebelum P4 go-live |
+| D-03 | Disetujui pengguna 6 November 2026: Asia/Jakarta, awal inklusif/akhir eksklusif, resign hari pertama nonaktif, tanpa koreksi backdate rilis awal | Terpenuhi untuk penyimpanan periode P1/P2 |
+| D-04 | Disetujui pengguna: kepala max1 definitif, Pelaksana multi, fungsional configurable, satu utama plus rangkap, acting wajib SK/periode tanpa automatic permission | Terpenuhi untuk baseline P2; tidak membuat pengecualian transisi kapasitas tanpa instruksi baru |
+| D-05 | Empat template operasional DRAFT disetujui. Struktur pusat, hubungan kantor, master/pemetaan level yang belum resmi dan detail reorganisasi masih ditunda | P1B draft boleh disiapkan; publish/apply memerlukan kelengkapan master terkait |
+| D-06 | Disetujui pengguna 6 November 2026: (1) permission `employees.*` dan `organization.*` dibuat granular tetapi pada rilis awal dipetakan hanya ke SuperAdmin internal `auth-admin`; role HR terpisah ditunda sampai ada instruksi baru, dan `users.read`/`users.write` tidak memberi hak pegawai. (2) `employees.history.read` adalah permission terpisah dari `employees.read` dan hanya dipegang pemegang hak pegawai pada butir 1. (3) Directory lintas user untuk konsumen ditunda: rilis awal hanya profil sendiri dan posisi atasan formal tanpa NIP/nama, serta tidak ada daftar pegawai/bulk profil untuk API key konsumen | Terpenuhi untuk hak endpoint/admin P3; directory dan role HR terpisah tetap di luar scope sampai instruksi baru |
 | D-07 | SLA pembaruan profil dan offboarding, batas cache, pemeriksaan status sesi ERP, availability, scheduler lifecycle | Blocking go-live P4/P6; tidak ada janji revokasi JWT instan |
 | D-08 | Retensi histori/audit dan koreksi backdate; referensi SK dan pembatasan data pribadi | Blocking kebijakan retensi/backdate; tidak ada hard delete |
 

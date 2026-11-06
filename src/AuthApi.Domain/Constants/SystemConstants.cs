@@ -26,6 +26,15 @@ public static class SystemConstants
 
         public const string AuditLogsRead = "audit-logs.read";
 
+        // D-06: granular employee/organization permissions. Initial release maps them to internal SuperAdmin only;
+        // intentionally NOT part of AllAdminPermissions so no permission rows are seeded automatically.
+        public const string EmployeesRead = "employees.read";
+        public const string EmployeesWrite = "employees.write";
+        public const string EmployeesHistoryRead = "employees.history.read";
+        public const string EmployeesAssignmentsWrite = "employees.assignments.write";
+        public const string EmployeesLifecycleWrite = "employees.lifecycle.write";
+        public const string EmployeesLinkWrite = "employees.link.write";
+
         public static readonly IReadOnlyList<(string Code, string Description)> AllAdminPermissions =
         [
             (AppsRead, "Melihat daftar dan detail aplikasi terdaftar (ClientApps)."),

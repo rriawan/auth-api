@@ -75,3 +75,15 @@ Seluruh perencanaan lanjutan maupun implementasi kode wajib konsisten dengan kep
    - **Masalah yang Diketahui:** Daftar kendala terbuka, catatan teknis, atau langkah manual yang masih menunggu eksekusi.
    - **Langkah Berikutnya:** Urutan tindakan konkret selanjutnya agar sesi baru dapat langsung mengeksekusi pekerjaan tanpa mengulang analisis dari awal.
 3. **Wajib Perbarui Setelah Bekerja:** Setiap kali menyelesaikan suatu fase, membuat keputusan teknis baru, menemukan masalah, atau sebelum mengakhiri giliran kerja penting, model AI **wajib** memperbarui isi `STATUS.md`.
+
+## 9. Koordinasi Multi-Agent
+1. **Agen Utama (Main Agent):** Baca `STATUS.md` terlebih dahulu sesuai §8 dan penuhi prasyarat baca §1 sebelum perubahan planning atau kode. Hanya Agen Utama yang memperbarui `STATUS.md` sesuai §5 dan §8, termasuk saat bekerja sendiri. Subagen melaporkan hasil, temuan, dan kendala kepada Agen Utama.
+2. **Delegasi Terbatas:** Delegasikan tugas yang dapat dikerjakan secara mandiri. Sertakan tujuan, ringkasan konteks terbaru, path atau bagian dokumen yang relevan, izin baca/tulis atau eksekusi, dan hasil yang diharapkan. Untuk pekerjaan paralel yang menulis file, tetapkan kepemilikan file yang tidak tumpang tindih.
+3. **Baca Sesuai Lingkup:** Setiap subagen wajib mengikuti `AGENTS.md` dan instruksi direktori yang berlaku. Untuk tugas hanya-baca, ringkasan `STATUS.md` dari Agen Utama memenuhi kebutuhan konteks awal §8. Buka bagian dokumen yang relevan jika konteks kurang. Hindari pemindaian seluruh repository dan pembacaan ulang planning tanpa kebutuhan. Subagen yang mengubah planning atau kode tetap memenuhi prasyarat baca §1.
+4. **Verifikasi Aman:** Larangan §7 berlaku untuk semua agen. Sebelum menjalankan verifikasi, pastikan perintah, hook, dan fixture terkait tidak memicu operasi database yang dilarang. Jika belum dapat dipastikan, jangan jalankan dan laporkan kendalanya kepada Agen Utama. Agen Utama tetap bertanggung jawab atas verifikasi §5.
+5. **Checkpoint Review**
+   - Wajib lakukan peninjauan independen sebelum memfinalisasi rencana implementasi yang kompleks.
+   - Jika kesalahan yang sama terjadi dua kali, hentikan percobaan berulang dan minta investigasi serta peninjauan sebelum mencoba lagi.
+   - Sebelum menyatakan pekerjaan signifikan selesai, tinjau diff akhir, hasil build dan test yang benar-benar dijalankan, serta risiko regresi.
+   - Selalu lakukan peninjauan keamanan untuk perubahan autentikasi, otorisasi, token, izin, atau migrasi.
+   - Hindari melibatkan peninjau untuk perubahan sepele yang tidak memengaruhi perilaku sistem.

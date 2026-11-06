@@ -18,6 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\data\organization\operational-templates.v1.json">
+      <Link>organization\operational-templates.v1.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\AuthApi.Domain\AuthApi.Domain.csproj" />
     <ProjectReference Include="..\..\src\AuthApi.Application\AuthApi.Application.csproj" />
     <ProjectReference Include="..\..\src\AuthApi.Infrastructure\AuthApi.Infrastructure.csproj" />

@@ -169,6 +169,1034 @@ namespace AuthApi.Infrastructure.Persistence.Migrations
                     b.ToTable("ClientApps", (string)null);
                 });
 
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmployeeFullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("EmployeeNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("EmployeeNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Employees_EmployeeNumber");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("Employees", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Employees_EmployeeFullName_NotBlank", "LEN(LTRIM(RTRIM([EmployeeFullName]))) > 0");
+
+                            t.HasCheckConstraint("CK_Employees_EmployeeNumber_NotBlank", "LEN(LTRIM(RTRIM([EmployeeNumber]))) > 0");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeeActingAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssignmentKey")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AssignmentType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("ChangeReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecisionReference")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("EffectiveToExclusive")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RecordState")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SourceEmployeePositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("SupersededAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SupersededByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupersededReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("TargetPositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentKey")
+                        .IsUnique()
+                        .HasDatabaseName("UX_EmployeeActingAssignments_Assignment_CurrentRevision")
+                        .HasFilter("[SupersededAtUtc] IS NULL");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SupersededByUserId");
+
+                    b.HasIndex("AssignmentKey", "RevisionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_EmployeeActingAssignments_Assignment_Revision");
+
+                    b.HasIndex("EmployeeId", "SourceEmployeePositionId");
+
+                    b.HasIndex("EmployeeId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_EmployeeActingAssignments_Employee_EffectiveRange");
+
+                    b.HasIndex("SourceEmployeePositionId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_EmployeeActingAssignments_SourcePosition_EffectiveRange");
+
+                    b.HasIndex("TargetPositionId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_EmployeeActingAssignments_TargetPosition_EffectiveRange");
+
+                    b.ToTable("EmployeeActingAssignments", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_AssignmentType", "[AssignmentType] IN ('PLH', 'PLT')");
+
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_ChangeReason_NotBlank", "LEN(LTRIM(RTRIM([ChangeReason]))) > 0");
+
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_DecisionReference_NotBlank", "LEN(LTRIM(RTRIM([DecisionReference]))) > 0");
+
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_EffectiveRange", "[EffectiveToExclusive] IS NULL OR [EffectiveToExclusive] > [EffectiveFrom]");
+
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_RecordState", "[RecordState] IN ('DRAFT', 'CONFIRMED', 'CANCELLED')");
+
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_RevisionNumber", "[RevisionNumber] > 0");
+
+                            t.HasCheckConstraint("CK_EmployeeActingAssignments_SupersededMetadata", "([SupersededAtUtc] IS NULL AND [SupersededByUserId] IS NULL AND [SupersededReason] IS NULL) OR ([SupersededAtUtc] IS NOT NULL AND [SupersededByUserId] IS NOT NULL AND [SupersededReason] IS NOT NULL AND LEN(LTRIM(RTRIM([SupersededReason]))) > 0)");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeePosition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssignmentKey")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChangeReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecisionReference")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("EffectiveToExclusive")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RecordState")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SupersededAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SupersededByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupersededReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("EmployeeId", "Id")
+                        .HasName("AK_EmployeePositions_Employee_Id");
+
+                    b.HasIndex("AssignmentKey")
+                        .IsUnique()
+                        .HasDatabaseName("UX_EmployeePositions_Assignment_CurrentRevision")
+                        .HasFilter("[SupersededAtUtc] IS NULL");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SupersededByUserId");
+
+                    b.HasIndex("AssignmentKey", "RevisionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_EmployeePositions_Assignment_Revision");
+
+                    b.HasIndex("EmployeeId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_EmployeePositions_Employee_EffectiveRange");
+
+                    b.HasIndex("PositionId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_EmployeePositions_Position_EffectiveRange");
+
+                    b.ToTable("EmployeePositions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_EmployeePositions_ChangeReason_NotBlank", "LEN(LTRIM(RTRIM([ChangeReason]))) > 0");
+
+                            t.HasCheckConstraint("CK_EmployeePositions_EffectiveRange", "[EffectiveToExclusive] IS NULL OR [EffectiveToExclusive] > [EffectiveFrom]");
+
+                            t.HasCheckConstraint("CK_EmployeePositions_RecordState", "[RecordState] IN ('DRAFT', 'CONFIRMED', 'CANCELLED')");
+
+                            t.HasCheckConstraint("CK_EmployeePositions_RevisionNumber", "[RevisionNumber] > 0");
+
+                            t.HasCheckConstraint("CK_EmployeePositions_SupersededMetadata", "([SupersededAtUtc] IS NULL AND [SupersededByUserId] IS NULL AND [SupersededReason] IS NULL) OR ([SupersededAtUtc] IS NOT NULL AND [SupersededByUserId] IS NOT NULL AND [SupersededReason] IS NOT NULL AND LEN(LTRIM(RTRIM([SupersededReason]))) > 0)");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeeStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChangeReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecisionReference")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("EffectiveToExclusive")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RecordState")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StatusCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("SupersededAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SupersededByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupersededReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SupersededByUserId");
+
+                    b.HasIndex("EmployeeId", "RevisionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_EmployeeStatuses_Employee_Revision");
+
+                    b.HasIndex("EmployeeId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_EmployeeStatuses_Employee_EffectiveRange");
+
+                    b.ToTable("EmployeeStatuses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_EmployeeStatuses_ChangeReason_NotBlank", "LEN(LTRIM(RTRIM([ChangeReason]))) > 0");
+
+                            t.HasCheckConstraint("CK_EmployeeStatuses_EffectiveRange", "[EffectiveToExclusive] IS NULL OR [EffectiveToExclusive] > [EffectiveFrom]");
+
+                            t.HasCheckConstraint("CK_EmployeeStatuses_RecordState", "[RecordState] IN ('DRAFT', 'CONFIRMED', 'CANCELLED')");
+
+                            t.HasCheckConstraint("CK_EmployeeStatuses_RevisionNumber", "[RevisionNumber] > 0");
+
+                            t.HasCheckConstraint("CK_EmployeeStatuses_StatusCode", "[StatusCode] IN ('ACTIVE', 'RESIGNED')");
+
+                            t.HasCheckConstraint("CK_EmployeeStatuses_SupersededMetadata", "([SupersededAtUtc] IS NULL AND [SupersededByUserId] IS NULL AND [SupersededReason] IS NULL) OR ([SupersededAtUtc] IS NOT NULL AND [SupersededByUserId] IS NOT NULL AND [SupersededReason] IS NOT NULL AND LEN(LTRIM(RTRIM([SupersededReason]))) > 0)");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.UserEmployeeLink", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("LinkedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LinkedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_UserEmployeeLinks_EmployeeId");
+
+                    b.HasIndex("LinkedByUserId");
+
+                    b.ToTable("UserEmployeeLinks", (string)null);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.Office", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OfficeCode")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("OfficeCode")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Offices_OfficeCode");
+
+                    b.ToTable("Offices", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Offices_OfficeCode_ThreeDigits", "DATALENGTH([OfficeCode]) = 3 AND [OfficeCode] COLLATE Latin1_General_100_BIN2 NOT LIKE '%[^0-9]%'");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OfficeClassification", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("OfficeClassifications", (string)null);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OfficeTemplateApplication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AppliedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("AppliedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid>("OfficeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RequestHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppliedByUserId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("OfficeId", "EffectiveFrom")
+                        .HasDatabaseName("IX_OfficeTemplateApplications_Office_EffectiveFrom");
+
+                    b.HasIndex("OfficeId", "IdempotencyKey")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OfficeTemplateApplications_Office_IdempotencyKey");
+
+                    b.ToTable("OfficeTemplateApplications", (string)null);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OfficeVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChangeReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ClassificationCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecisionReference")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("EffectiveToExclusive")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("OfficeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SupersededAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SupersededByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupersededReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassificationCode");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("SupersededByUserId");
+
+                    b.HasIndex("OfficeId", "RevisionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OfficeVersions_Office_Revision");
+
+                    b.HasIndex("OfficeId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_OfficeVersions_Office_EffectiveRange");
+
+                    b.ToTable("OfficeVersions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_OfficeVersions_EffectiveRange", "[EffectiveToExclusive] IS NULL OR [EffectiveToExclusive] > [EffectiveFrom]");
+
+                            t.HasCheckConstraint("CK_OfficeVersions_RevisionNumber", "[RevisionNumber] > 0");
+
+                            t.HasCheckConstraint("CK_OfficeVersions_SupersededMetadata", "(([SupersededAtUtc] IS NULL AND [SupersededByUserId] IS NULL AND [SupersededReason] IS NULL) OR ([SupersededAtUtc] IS NOT NULL AND [SupersededByUserId] IS NOT NULL AND [SupersededReason] IS NOT NULL AND LEN(LTRIM(RTRIM([SupersededReason]))) > 0))");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OrgUnit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OfficeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("UnitCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("OfficeId", "UnitCode")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OrgUnits_Office_UnitCode");
+
+                    b.ToTable("OrgUnits", (string)null);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OrgUnitVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChangeReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecisionReference")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("EffectiveToExclusive")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("OrgUnitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ParentOrgUnitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SupersededAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SupersededByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupersededReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("UnitType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ParentOrgUnitId");
+
+                    b.HasIndex("SupersededByUserId");
+
+                    b.HasIndex("OrgUnitId", "RevisionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_OrgUnitVersions_Unit_Revision");
+
+                    b.HasIndex("OrgUnitId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_OrgUnitVersions_Unit_EffectiveRange");
+
+                    b.ToTable("OrgUnitVersions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_OrgUnitVersions_EffectiveRange", "[EffectiveToExclusive] IS NULL OR [EffectiveToExclusive] > [EffectiveFrom]");
+
+                            t.HasCheckConstraint("CK_OrgUnitVersions_NotSelfParent", "[ParentOrgUnitId] IS NULL OR [ParentOrgUnitId] <> [OrgUnitId]");
+
+                            t.HasCheckConstraint("CK_OrgUnitVersions_RevisionNumber", "[RevisionNumber] > 0");
+
+                            t.HasCheckConstraint("CK_OrgUnitVersions_SupersededMetadata", "(([SupersededAtUtc] IS NULL AND [SupersededByUserId] IS NULL AND [SupersededReason] IS NULL) OR ([SupersededAtUtc] IS NOT NULL AND [SupersededByUserId] IS NOT NULL AND [SupersededReason] IS NOT NULL AND LEN(LTRIM(RTRIM([SupersededReason]))) > 0))");
+
+                            t.HasCheckConstraint("CK_OrgUnitVersions_UnitType", "[UnitType] IN ('DIRECTORATE', 'DIVISION', 'DEPARTMENT', 'SECTION', 'WORKGROUP', 'OTHER')");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.Position", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OrgUnitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PositionCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("OrgUnitId", "PositionCode")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Positions_Unit_PositionCode");
+
+                    b.ToTable("Positions", (string)null);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.PositionLevel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PositionLevels_Code");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("DisplayOrder")
+                        .HasDatabaseName("IX_PositionLevels_DisplayOrder");
+
+                    b.ToTable("PositionLevels", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PositionLevels_DisplayOrder", "[DisplayOrder] >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.PositionVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChangeReason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DecisionReference")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("EffectiveToExclusive")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUnitHead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LevelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("MaxIncumbents")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReportsToPositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RevisionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SupersededAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SupersededByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SupersededReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Track")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LevelId");
+
+                    b.HasIndex("SupersededByUserId");
+
+                    b.HasIndex("PositionId", "RevisionNumber")
+                        .IsUnique()
+                        .HasDatabaseName("UX_PositionVersions_Position_Revision");
+
+                    b.HasIndex("ReportsToPositionId", "EffectiveFrom")
+                        .HasDatabaseName("IX_PositionVersions_ReportsTo_EffectiveFrom");
+
+                    b.HasIndex("PositionId", "EffectiveFrom", "EffectiveToExclusive")
+                        .HasDatabaseName("IX_PositionVersions_Position_EffectiveRange");
+
+                    b.ToTable("PositionVersions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_PositionVersions_EffectiveRange", "[EffectiveToExclusive] IS NULL OR [EffectiveToExclusive] > [EffectiveFrom]");
+
+                            t.HasCheckConstraint("CK_PositionVersions_MaxIncumbents", "[MaxIncumbents] IS NULL OR [MaxIncumbents] > 0");
+
+                            t.HasCheckConstraint("CK_PositionVersions_NotSelfSupervisor", "[ReportsToPositionId] IS NULL OR [ReportsToPositionId] <> [PositionId]");
+
+                            t.HasCheckConstraint("CK_PositionVersions_RevisionNumber", "[RevisionNumber] > 0");
+
+                            t.HasCheckConstraint("CK_PositionVersions_SupersededMetadata", "(([SupersededAtUtc] IS NULL AND [SupersededByUserId] IS NULL AND [SupersededReason] IS NULL) OR ([SupersededAtUtc] IS NOT NULL AND [SupersededByUserId] IS NOT NULL AND [SupersededReason] IS NOT NULL AND LEN(LTRIM(RTRIM([SupersededReason]))) > 0))");
+
+                            t.HasCheckConstraint("CK_PositionVersions_Track", "[Track] IN ('LINE', 'FUNCTIONAL')");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.StructureTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClassificationCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("PublishedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PublishedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("PublishedByUserId");
+
+                    b.HasIndex("ClassificationCode", "Version")
+                        .IsUnique()
+                        .HasDatabaseName("UX_StructureTemplates_Classification_Version");
+
+                    b.ToTable("StructureTemplates", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_StructureTemplates_PublicationMetadata", "([State] = 'DRAFT' AND [PublishedAtUtc] IS NULL AND [PublishedByUserId] IS NULL) OR ([State] = 'PUBLISHED' AND [PublishedAtUtc] IS NOT NULL AND [PublishedByUserId] IS NOT NULL)");
+
+                            t.HasCheckConstraint("CK_StructureTemplates_Version", "[Version] > 0");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.TemplateOrgUnit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("ParentTemplateOrgUnitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UnitCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UnitType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("TemplateId", "Id")
+                        .HasName("AK_TemplateOrgUnits_Template_Id");
+
+                    b.HasIndex("TemplateId", "ParentTemplateOrgUnitId");
+
+                    b.HasIndex("TemplateId", "UnitCode")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TemplateOrgUnits_Template_UnitCode");
+
+                    b.ToTable("TemplateOrgUnits", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TemplateOrgUnits_NotSelfParent", "[ParentTemplateOrgUnitId] IS NULL OR [ParentTemplateOrgUnitId] <> [Id]");
+
+                            t.HasCheckConstraint("CK_TemplateOrgUnits_UnitType", "[UnitType] IN ('DIRECTORATE', 'DIVISION', 'DEPARTMENT', 'SECTION', 'WORKGROUP', 'OTHER')");
+                        });
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.TemplatePosition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsUnitHead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LevelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("MaxIncumbents")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PositionCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid?>("ReportsToTemplatePositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TemplateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TemplateOrgUnitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Track")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("TemplateId", "Id")
+                        .HasName("AK_TemplatePositions_Template_Id");
+
+                    b.HasIndex("LevelId");
+
+                    b.HasIndex("TemplateId", "PositionCode")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TemplatePositions_Template_PositionCode");
+
+                    b.HasIndex("TemplateId", "ReportsToTemplatePositionId");
+
+                    b.HasIndex("TemplateId", "TemplateOrgUnitId");
+
+                    b.ToTable("TemplatePositions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TemplatePositions_MaxIncumbents", "[MaxIncumbents] IS NULL OR [MaxIncumbents] > 0");
+
+                            t.HasCheckConstraint("CK_TemplatePositions_NotSelfSupervisor", "[ReportsToTemplatePositionId] IS NULL OR [ReportsToTemplatePositionId] <> [Id]");
+
+                            t.HasCheckConstraint("CK_TemplatePositions_Track", "[Track] IN ('LINE', 'FUNCTIONAL')");
+                        });
+                });
+
             modelBuilder.Entity("AuthApi.Domain.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -417,6 +1445,364 @@ namespace AuthApi.Infrastructure.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.Employee", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeeActingAssignment", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Employees.Employee", "Employee")
+                        .WithMany("ActingAssignments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupersededByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Position", "TargetPosition")
+                        .WithMany()
+                        .HasForeignKey("TargetPositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Employees.EmployeePosition", "SourceEmployeePosition")
+                        .WithMany("ActingAssignments")
+                        .HasForeignKey("EmployeeId", "SourceEmployeePositionId")
+                        .HasPrincipalKey("EmployeeId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("SourceEmployeePosition");
+
+                    b.Navigation("TargetPosition");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeePosition", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Employees.Employee", "Employee")
+                        .WithMany("Positions")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Position", "Position")
+                        .WithMany()
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupersededByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Position");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeeStatus", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Employees.Employee", "Employee")
+                        .WithMany("Statuses")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupersededByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.UserEmployeeLink", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.Employees.Employee", null)
+                        .WithOne()
+                        .HasForeignKey("AuthApi.Domain.Entities.Employees.UserEmployeeLink", "EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("LinkedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.Office", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OfficeTemplateApplication", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AppliedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Office", "Office")
+                        .WithMany("TemplateApplications")
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.StructureTemplate", "Template")
+                        .WithMany("OfficeApplications")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Office");
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OfficeVersion", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.Organization.OfficeClassification", "Classification")
+                        .WithMany("OfficeVersions")
+                        .HasForeignKey("ClassificationCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Office", "Office")
+                        .WithMany("Versions")
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupersededByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Classification");
+
+                    b.Navigation("Office");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OrgUnit", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Office", "Office")
+                        .WithMany("OrgUnits")
+                        .HasForeignKey("OfficeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Office");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OrgUnitVersion", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.OrgUnit", "OrgUnit")
+                        .WithMany("Versions")
+                        .HasForeignKey("OrgUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.OrgUnit", "ParentOrgUnit")
+                        .WithMany()
+                        .HasForeignKey("ParentOrgUnitId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupersededByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("OrgUnit");
+
+                    b.Navigation("ParentOrgUnit");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.Position", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.OrgUnit", "OrgUnit")
+                        .WithMany("Positions")
+                        .HasForeignKey("OrgUnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OrgUnit");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.PositionLevel", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.PositionVersion", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.PositionLevel", "Level")
+                        .WithMany("PositionVersions")
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Position", "Position")
+                        .WithMany("Versions")
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.Position", "ReportsToPosition")
+                        .WithMany()
+                        .HasForeignKey("ReportsToPositionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SupersededByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Level");
+
+                    b.Navigation("Position");
+
+                    b.Navigation("ReportsToPosition");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.StructureTemplate", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.Organization.OfficeClassification", "Classification")
+                        .WithMany("StructureTemplates")
+                        .HasForeignKey("ClassificationCode")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("PublishedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Classification");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.TemplateOrgUnit", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.Organization.StructureTemplate", "Template")
+                        .WithMany("OrgUnits")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.TemplateOrgUnit", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("TemplateId", "ParentTemplateOrgUnitId")
+                        .HasPrincipalKey("TemplateId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.TemplatePosition", b =>
+                {
+                    b.HasOne("AuthApi.Domain.Entities.Organization.PositionLevel", null)
+                        .WithMany()
+                        .HasForeignKey("LevelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.StructureTemplate", "Template")
+                        .WithMany("Positions")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.TemplatePosition", "ReportsToPosition")
+                        .WithMany()
+                        .HasForeignKey("TemplateId", "ReportsToTemplatePositionId")
+                        .HasPrincipalKey("TemplateId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AuthApi.Domain.Entities.Organization.TemplateOrgUnit", "OrgUnit")
+                        .WithMany("Positions")
+                        .HasForeignKey("TemplateId", "TemplateOrgUnitId")
+                        .HasPrincipalKey("TemplateId", "Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("OrgUnit");
+
+                    b.Navigation("ReportsToPosition");
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("AuthApi.Domain.Entities.Permission", b =>
                 {
                     b.HasOne("AuthApi.Domain.Entities.ClientApp", "ClientApp")
@@ -515,6 +1901,69 @@ namespace AuthApi.Infrastructure.Persistence.Migrations
                     b.Navigation("Roles");
 
                     b.Navigation("UserAppRoles");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.Employee", b =>
+                {
+                    b.Navigation("ActingAssignments");
+
+                    b.Navigation("Positions");
+
+                    b.Navigation("Statuses");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Employees.EmployeePosition", b =>
+                {
+                    b.Navigation("ActingAssignments");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.Office", b =>
+                {
+                    b.Navigation("OrgUnits");
+
+                    b.Navigation("TemplateApplications");
+
+                    b.Navigation("Versions");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OfficeClassification", b =>
+                {
+                    b.Navigation("OfficeVersions");
+
+                    b.Navigation("StructureTemplates");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.OrgUnit", b =>
+                {
+                    b.Navigation("Positions");
+
+                    b.Navigation("Versions");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.Position", b =>
+                {
+                    b.Navigation("Versions");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.PositionLevel", b =>
+                {
+                    b.Navigation("PositionVersions");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.StructureTemplate", b =>
+                {
+                    b.Navigation("OfficeApplications");
+
+                    b.Navigation("OrgUnits");
+
+                    b.Navigation("Positions");
+                });
+
+            modelBuilder.Entity("AuthApi.Domain.Entities.Organization.TemplateOrgUnit", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Positions");
                 });
 
             modelBuilder.Entity("AuthApi.Domain.Entities.Permission", b =>

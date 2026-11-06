@@ -29,6 +29,25 @@ public enum AuditEventType
     PermissionCreated,
     PermissionUpdated,
     PermissionDeleted,
-    UserAppRolesUpdated
+    UserAppRolesUpdated,
+    OrganizationMasterProvisioned,
+    OrganizationTemplatesProvisioned,
+    EmployeeCreated,
+    EmployeeIdentityUpdated,
+    EmployeeStatusChanged,
+    UserEmployeeLinked,
+    UserEmployeeUnlinked,
+    EmployeePositionAssigned,
+    EmployeePositionTransferred,
+    EmployeePositionEnded,
+    EmployeeActingAssigned,
+    EmployeeActingEnded,
+    OrganizationOfficeCreated,
+    OrganizationOfficeVersioned,
+    OrganizationUnitCreated,
+    OrganizationUnitVersioned,
+    OrganizationPositionCreated,
+    OrganizationPositionVersioned,
+    EmployeePlacementRevised
 }
 

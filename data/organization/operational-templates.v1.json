@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "state": "DRAFT",
+  "notes": "Template operasional awal berstatus draft. Kode unit dan posisi adalah kode teknis usulan, bukan kode resmi perusahaan. ROOT hanya wadah struktur template dan bukan unit master perusahaan yang telah disahkan. Level posisi sengaja belum dipetakan karena master level resmi belum tersedia. Template ini tidak menetapkan role atau permission authorization.",
+  "templates": [
+    {
+      "classificationCode": "CAB-I",
+      "version": 1,
+      "units": [
+        { "code": "ROOT", "parentCode": null, "type": "OTHER", "name": "Kantor Cabang" },
+        { "code": "MARKETING", "parentCode": "ROOT", "type": "SECTION", "name": "Seksi Pemasaran" },
+        { "code": "TECHNICAL", "parentCode": "ROOT", "type": "SECTION", "name": "Seksi Teknik" },
+        { "code": "FINANCE", "parentCode": "ROOT", "type": "SECTION", "name": "Seksi Keuangan, SDM, dan Umum" }
+      ],
+      "positions": [
+        { "code": "HEAD", "unitCode": "ROOT", "reportsToCode": null, "name": "Kepala Cabang", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "HEAD_MARKETING", "unitCode": "MARKETING", "reportsToCode": "HEAD", "name": "Kepala Seksi Pemasaran", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "HEAD_TECHNICAL", "unitCode": "TECHNICAL", "reportsToCode": "HEAD", "name": "Kepala Seksi Teknik", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "HEAD_FINANCE", "unitCode": "FINANCE", "reportsToCode": "HEAD", "name": "Kepala Seksi Keuangan, SDM, dan Umum", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "STAFF_MARKETING", "unitCode": "MARKETING", "reportsToCode": "HEAD_MARKETING", "name": "Pelaksana Pemasaran", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_UNDERWRITING", "unitCode": "TECHNICAL", "reportsToCode": "HEAD_TECHNICAL", "name": "Pelaksana Akseptasi", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_CLAIMS_SUBROGATION", "unitCode": "TECHNICAL", "reportsToCode": "HEAD_TECHNICAL", "name": "Pelaksana Klaim & Subrogasi", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_FINANCE", "unitCode": "FINANCE", "reportsToCode": "HEAD_FINANCE", "name": "Pelaksana Keuangan, SDM, dan Umum", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null }
+      ]
+    },
+    {
+      "classificationCode": "CAB-II",
+      "version": 1,
+      "units": [
+        { "code": "ROOT", "parentCode": null, "type": "OTHER", "name": "Kantor Cabang" },
+        { "code": "MARKETING", "parentCode": "ROOT", "type": "SECTION", "name": "Seksi Pemasaran" },
+        { "code": "OPERATIONS", "parentCode": "ROOT", "type": "SECTION", "name": "Seksi Operasional" }
+      ],
+      "positions": [
+        { "code": "HEAD", "unitCode": "ROOT", "reportsToCode": null, "name": "Kepala Cabang", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "HEAD_MARKETING", "unitCode": "MARKETING", "reportsToCode": "HEAD", "name": "Kepala Seksi Pemasaran", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "HEAD_OPERATIONS", "unitCode": "OPERATIONS", "reportsToCode": "HEAD", "name": "Kepala Seksi Operasional", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "STAFF_MARKETING", "unitCode": "MARKETING", "reportsToCode": "HEAD_MARKETING", "name": "Pelaksana Pemasaran", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_UNDERWRITING", "unitCode": "OPERATIONS", "reportsToCode": "HEAD_OPERATIONS", "name": "Pelaksana Akseptasi", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_CLAIMS_SUBROGATION", "unitCode": "OPERATIONS", "reportsToCode": "HEAD_OPERATIONS", "name": "Pelaksana Klaim & Subrogasi", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_FINANCE", "unitCode": "OPERATIONS", "reportsToCode": "HEAD_OPERATIONS", "name": "Pelaksana Keuangan, SDM, dan Umum", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null }
+      ]
+    },
+    {
+      "classificationCode": "CAB-III",
+      "version": 1,
+      "units": [
+        { "code": "ROOT", "parentCode": null, "type": "OTHER", "name": "Kantor Cabang" },
+        { "code": "OPERATIONS", "parentCode": "ROOT", "type": "SECTION", "name": "Seksi Operasional" }
+      ],
+      "positions": [
+        { "code": "HEAD", "unitCode": "ROOT", "reportsToCode": null, "name": "Kepala Cabang", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "HEAD_OPERATIONS", "unitCode": "OPERATIONS", "reportsToCode": "HEAD", "name": "Kepala Seksi Operasional", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "STAFF_MARKETING", "unitCode": "ROOT", "reportsToCode": "HEAD", "name": "Pelaksana Pemasaran", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_UNDERWRITING", "unitCode": "OPERATIONS", "reportsToCode": "HEAD_OPERATIONS", "name": "Pelaksana Akseptasi", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_CLAIMS_SUBROGATION", "unitCode": "OPERATIONS", "reportsToCode": "HEAD_OPERATIONS", "name": "Pelaksana Klaim & Subrogasi", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_FINANCE", "unitCode": "OPERATIONS", "reportsToCode": "HEAD_OPERATIONS", "name": "Pelaksana Keuangan, SDM, dan Umum", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null }
+      ]
+    },
+    {
+      "classificationCode": "PEMASAR",
+      "version": 1,
+      "units": [
+        { "code": "ROOT", "parentCode": null, "type": "OTHER", "name": "Kantor Pemasar" }
+      ],
+      "positions": [
+        { "code": "HEAD", "unitCode": "ROOT", "reportsToCode": null, "name": "Kepala Pemasar", "track": "LINE", "isUnitHead": true, "maxIncumbents": 1, "levelCode": null },
+        { "code": "STAFF_ADMIN", "unitCode": "ROOT", "reportsToCode": "HEAD", "name": "Pelaksana Administrasi Pemasar", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null },
+        { "code": "STAFF_FINANCE", "unitCode": "ROOT", "reportsToCode": "HEAD", "name": "Pelaksana Keuangan Pemasar", "track": "LINE", "isUnitHead": false, "maxIncumbents": null, "levelCode": null }
+      ]
+    }
+  ]
+}
