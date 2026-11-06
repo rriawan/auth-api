@@ -1,8 +1,10 @@
 import {
+  Building2,
   History,
   House,
   Layers,
   User,
+  UserRoundCog,
   UsersRound,
 } from "lucide-react";
 
@@ -26,6 +28,19 @@ export const data = {
       title: "Pengguna",
       url: "/users",
       icon: UsersRound,
+    },
+    {
+      label: "Organisasi & Pegawai",
+    },
+    {
+      title: "Pegawai",
+      url: "/employees",
+      icon: UserRoundCog,
+    },
+    {
+      title: "Kantor",
+      url: "/organization/offices",
+      icon: Building2,
     },
     {
       label: "Keamanan",

@@ -13,6 +13,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserAppAccessDetail } from "@/components/users/actions/users";
 import { UserAppAccessTab } from "@/components/users/user-app-access-tab";
 import { UserInfoTab } from "@/components/users/user-info-tab";
+import { todayJakarta } from "@/components/employees/format";
+import { UserOrganizationTab } from "@/components/users/user-organization-tab";
+import { auth } from "@/auth";
+import { employeesApi } from "@/lib/api/employees";
+import { hasPermission } from "@/lib/auth/permission-rules";
+import type { UserOrganizationDto } from "@/lib/api/employee-types";
 import { appsApi } from "@/lib/api/apps";
 import { getErrorMessage } from "@/lib/api/errors";
 import { rolesApi } from "@/lib/api/roles";
@@ -22,6 +28,7 @@ import { usersApi } from "@/lib/api/users";
 import {
   AlertTriangle,
   ArrowLeft,
+  Building2,
   CheckCircle2,
   Layers,
   Lock,
@@ -140,6 +147,19 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
       initialAccessDetail = { availableRoles, userAccess };
     } catch {
       initialAccessDetail = null;
+    }
+  }
+
+  // Tab Organisasi bersifat opsional: kegagalan memuatnya tidak boleh merusak halaman pengguna.
+  const session = await auth();
+  const canReadEmployees = hasPermission(session?.user?.permissions, session?.user?.roles, "employees.read");
+  let organization: UserOrganizationDto | null = null;
+  let organizationError: string | null = null;
+  if (canReadEmployees) {
+    try {
+      organization = await employeesApi.getByUser(user.id);
+    } catch (err) {
+      organizationError = getErrorMessage(err);
     }
   }
 
@@ -271,6 +291,12 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             <Layers className="w-3.5 h-3.5" />
             Akses Aplikasi ({user.appAssignments.length})
           </TabsTrigger>
+          {canReadEmployees && (
+          <TabsTrigger value="organization" className="gap-2 text-xs">
+            <Building2 className="w-3.5 h-3.5" />
+            Organisasi
+          </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="info">
@@ -286,6 +312,12 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
             appsFetchError={appsFetchError}
           />
         </TabsContent>
+
+        {canReadEmployees && (
+          <TabsContent value="organization">
+            <UserOrganizationTab userId={user.id} organization={organization} fetchError={organizationError} today={todayJakarta()} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

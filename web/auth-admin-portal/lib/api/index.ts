@@ -10,3 +10,7 @@ export * from "./permissions";
 export * from "./user-app-roles";
 export * from "./audit-logs";
 
+export * from "./employees";
+export * from "./organization";
+export * from "./self-organization";
+export * from "./employee-types";

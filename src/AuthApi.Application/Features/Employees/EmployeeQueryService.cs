@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AuthApi.Application.Common.Interfaces;
 using AuthApi.Domain.Entities.Employees;
 using AuthApi.Domain.Enums.Employees;
@@ -7,16 +8,19 @@ namespace AuthApi.Application.Features.Employees;
 
 public sealed record EmployeePage(IReadOnlyList<EmployeeSummary> Items, int Page, int PageSize, int TotalCount);
 
-public sealed record StatusRecordDto(Guid Id, EmployeeStatusCode StatusCode, DateOnly EffectiveFrom, DateOnly? EffectiveToExclusive,
-    EmployeeRecordState RecordState, int RevisionNumber, string ChangeReason, string? DecisionReference,
+public sealed record StatusRecordDto(Guid Id, [property: JsonConverter(typeof(JsonStringEnumConverter))] EmployeeStatusCode StatusCode,
+    DateOnly EffectiveFrom, DateOnly? EffectiveToExclusive,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] EmployeeRecordState RecordState, int RevisionNumber, string ChangeReason, string? DecisionReference,
     DateTime CreatedAtUtc, DateTime? SupersededAtUtc);
 
 public sealed record PlacementRecordDto(Guid Id, Guid AssignmentKey, Guid PositionId, string PositionCode, bool IsPrimary,
-    DateOnly EffectiveFrom, DateOnly? EffectiveToExclusive, EmployeeRecordState RecordState, int RevisionNumber,
+    DateOnly EffectiveFrom, DateOnly? EffectiveToExclusive,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] EmployeeRecordState RecordState, int RevisionNumber,
     string ChangeReason, string? DecisionReference, DateTime CreatedAtUtc, DateTime? SupersededAtUtc);
 
 public sealed record ActingRecordDto(Guid Id, Guid AssignmentKey, Guid SourceRecordId, Guid TargetPositionId, string TargetPositionCode,
-    ActingAssignmentType AssignmentType, DateOnly EffectiveFrom, DateOnly? EffectiveToExclusive, EmployeeRecordState RecordState,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] ActingAssignmentType AssignmentType, DateOnly EffectiveFrom, DateOnly? EffectiveToExclusive,
+    [property: JsonConverter(typeof(JsonStringEnumConverter))] EmployeeRecordState RecordState,
     int RevisionNumber, string ChangeReason, string DecisionReference, DateTime CreatedAtUtc, DateTime? SupersededAtUtc);
 
 public sealed record EmployeeDetail(EmployeeSummary Employee, IReadOnlyList<StatusRecordDto> Statuses,
@@ -33,6 +37,8 @@ public interface IEmployeeQueryService
     /// <summary>Every revision, including superseded and cancelled rows.</summary>
     Task<EmployeeHistory> GetHistoryAsync(Guid employeeId, EmployeeActor actor, CancellationToken cancellationToken = default);
     Task<Guid?> FindEmployeeIdByUserAsync(Guid userId, EmployeeActor actor, CancellationToken cancellationToken = default);
+    /// <summary>Detail of the employee currently linked to the account, or null when the account has no link.</summary>
+    Task<EmployeeDetail?> GetByUserAsync(Guid userId, EmployeeActor actor, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -87,6 +93,12 @@ public sealed class EmployeeQueryService(IAppDbContext db, EmployeeMutationSuppo
         if (!await db.Employees.AnyAsync(x => x.Id == employeeId, cancellationToken)) throw new KeyNotFoundException("Employee not found.");
         var records = await LoadRecordsAsync(employeeId, currentOnly: false, cancellationToken);
         return new EmployeeHistory(employeeId, records.Statuses, records.Placements, records.Acting);
+    }
+
+    public async Task<EmployeeDetail?> GetByUserAsync(Guid userId, EmployeeActor actor, CancellationToken cancellationToken = default)
+    {
+        var employeeId = await FindEmployeeIdByUserAsync(userId, actor, cancellationToken);
+        return employeeId is null ? null : await GetAsync(employeeId.Value, actor, cancellationToken);
     }
 
     public async Task<Guid?> FindEmployeeIdByUserAsync(Guid userId, EmployeeActor actor, CancellationToken cancellationToken = default)

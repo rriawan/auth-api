@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AuthApi.Domain.Enums.Employees;
 
 namespace AuthApi.Application.Features.Employees;
@@ -24,7 +25,7 @@ public sealed record AuthorizedEmployeeMutation
     public string? UserAgent { get; }
 }
 public sealed record EmployeeSummary(Guid Id, string EmployeeNumber, string EmployeeFullName,
-    string Version, EmployeeStatusCode? CurrentStatus, Guid? LinkedUserId);
+    string Version, [property: JsonConverter(typeof(JsonStringEnumConverter))] EmployeeStatusCode? CurrentStatus, Guid? LinkedUserId);
 public sealed record EmployeeMutationResult(EmployeeSummary Employee, Guid? RecordId = null, Guid? SecondaryRecordId = null);
 
 public sealed record CreateEmployeeCommand(string EmployeeNumber, string EmployeeFullName, DateOnly EffectiveFrom, string Reason);
