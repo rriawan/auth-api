@@ -422,6 +422,60 @@ Digunakan oleh library JWT (seperti ASP.NET Core `AddJwtBearer` atau Node.js `jo
 
 ---
 
+### E. Pegawai & Organisasi
+
+#### Aturan bersama (admin)
+- **Auth:** `Authorization: Bearer <accessToken>` dengan `aud = auth-admin`. Header `X-Api-Key` ditolak (403). Hak SuperAdmin diperiksa ulang ke database pada setiap panggilan (403 bila tidak punya).
+- **Konkurensi:** semua mutasi atas resource yang sudah ada wajib `If-Match` berisi tepat satu ETag bertanda kutip (tanpa `W/`, tanpa koma) dari respons `GET` terakhir. Tanpa header → `428`; ETag usang → `412`; format salah → `400`.
+- **Respons:** `Cache-Control: no-store`; ETag dikirim pada detail dan hasil mutasi.
+- **Rate limit:** kebijakan `AdminEmployees`, 120 permintaan/60 detik (fixed window), lewat batas → `429`.
+- **Kode error umum:** 400 validasi, 401, 403, 404, 409 (aturan bisnis/`InvalidOperation`), 412, 428, 429.
+- Periode memakai tanggal bisnis Asia/Jakarta, awal inklusif, akhir eksklusif (`effectiveToExclusive`).
+
+#### E1. Pegawai (`/api/v1/admin/employees…`)
+| Endpoint | Keterangan | Body utama | Audit |
+|---|---|---|---|
+| `GET employees?search&page&pageSize` | Daftar paginasi (maks 100) | - | - |
+| `GET employees/{id}` | Detail current + ETag | - | - |
+| `GET employees/{id}/history` | Riwayat semua revisi | - | - |
+| `POST employees` → 201 | Buat pegawai | `employeeNumber`, `employeeFullName`, `effectiveFrom`, `reason` | EmployeeCreated |
+| `PUT employees/{id}` | Ubah identitas (If-Match) | `employeeNumber`, `employeeFullName`, `reason` | EmployeeIdentityUpdated |
+| `POST employees/{id}/status-changes` | Ubah status ACTIVE/RESIGNED | `statusCode`, `effectiveFrom`, `reason`, `decisionReference?` | EmployeeStatusChanged |
+| `POST employees/{id}/assignments` | Tambah penempatan | `positionId`, `isPrimary`, `effectiveFrom`, `effectiveToExclusive?`, `reason`, `decisionReference?` | EmployeePositionAssigned |
+| `POST employees/{id}/transfers` | Mutasi/promosi | `sourceAssignmentId`, `targetPositionId`, `effectiveFrom`, `reason`, `decisionReference?` | EmployeePositionTransferred |
+| `POST employees/{id}/assignments/{assignmentId}/revisions` | Akhiri penempatan (hanya `action: "END"`) | `action`, `effectiveToExclusive`, `reason` | EmployeePositionEnded |
+| `POST employees/{id}/acting-assignments` | Tambah Plh/Plt | `sourceAssignmentId`, `targetPositionId`, `assignmentType`, `effectiveFrom`, `effectiveToExclusive?`, `decisionReference` (wajib), `reason` | EmployeeActingAssigned |
+| `POST employees/{id}/acting-assignments/{actingId}/revisions` | Akhiri Plh/Plt (`END`) | sama dengan revisi penempatan | EmployeeActingEnded |
+
+Catatan: `assignmentId`/`actingId` pada route adalah Id revisi row (berubah tiap revisi); ambil ulang detail setelah setiap mutasi. Plh/Plt tidak memberi permission otomatis.
+
+#### E2. Tautan akun ↔ pegawai
+- `GET /api/v1/admin/users/{userId}/organization` → `{ userId, employee | null }` (ETag hanya bila tertaut).
+- `PUT /api/v1/admin/users/{userId}/employee-link` (If-Match) body `{ employeeId, reason }` — audit UserEmployeeLinked.
+- `DELETE /api/v1/admin/users/{userId}/employee-link` (If-Match) body `{ reason }` — 404 bila tidak tertaut; audit UserEmployeeUnlinked. Body JSON wajib; pastikan proxy/BFF tidak membuangnya.
+
+#### E3. Siklus hidup akun
+- `POST /api/v1/admin/employees/lifecycle/process-resignations?dryRun=true` (default dry-run). Menonaktifkan akun aktif milik pegawai yang resign-nya sudah berlaku, mencabut refresh token, audit EmployeeAccountDeactivated; idempoten, batch 200 (`remaining`). Role/UserAppRoles tidak disentuh; reaktivasi pegawai tidak mengaktifkan akun lagi.
+- Penegakan saat login/refresh/verify/permissions/me dikendalikan flag `SecuritySettings:EnforceEmploymentStatus` (default `false`; aktifkan hanya setelah data tervalidasi).
+
+#### E4. Master organisasi (`/api/v1/admin/organization…`)
+Baca: `GET classifications`; `GET offices?search&classification&asOf&page&pageSize`; `GET offices/{id}?includeHistory`; `GET offices/{id}/structure?asOf` (pemegang definitif & vacancy); `GET units?officeId&asOf`; `GET units/{id}`; `GET positions?officeId&unitId&asOf`; `GET positions/{id}`. Detail membawa ETag (= versi).
+
+Tulis (201; audit `Organization{Office|Unit|Position}{Created|Versioned}`):
+- `POST offices` — `officeCode` (3 digit), `name`, `classificationCode`, `effectiveFrom`, `reason`, `decisionReference?`.
+- `POST units` — `officeId`, `unitCode`, `parentOrgUnitId?`, `unitType`, `name`, `effectiveFrom`, `reason`.
+- `POST positions` — `orgUnitId`, `positionCode`, `name`, `track`, `isUnitHead`, `maxIncumbents?`, `levelId?`, `reportsToPositionId?`, `effectiveFrom`, `reason`.
+- `POST {offices|units|positions}/{id}/versions` (If-Match) — field di atas ditambah `isActive`, tanpa kode. Versi yang berlaku di-supersede; ditolak bila ada versi lebih lanjut, tanggal mundur, atau lebih dari 5 tahun ke depan.
+Setiap tulis memvalidasi ulang integritas seluruh timeline kantor dan penempatan pegawai terkait; gagal = rollback (409).
+
+#### E5. Profil sendiri untuk aplikasi konsumen (`/api/v1/auth/me/organization`)
+- **Auth:** Bearer JWT aplikasi konsumen (`[Authorize]`); pengguna dari `sub`, aplikasi dari `aud`; tidak menerima userId/asOf dari klien. Kebijakan rate limit `SelfProfile` 120/menit (per `sub`).
+- `GET /api/v1/auth/me/organization` → `{ userId, accountDisplayName, asOf, businessTimeZone, profileVersion, nextEffectiveChangeAtUtc, employee | null, primaryAssignmentId, assignments[] }`. ETag = `profileVersion`; mendukung `If-None-Match` (termasuk `W/` dan `*`) → `304`. Akun tanpa tautan → 200 dengan `employee: null`. Pegawai RESIGNED → 403.
+- `GET /api/v1/auth/me/reporting-line?assignmentId=` → `{ assignmentId, asOf, positions[] }`; atasan formal hanya posisi + vacancy (tanpa NIP/nama). `assignmentId` asing/tidak dikenal → 404 (tidak dapat dibedakan).
+- Tidak ada field permission/approval; konsumen tetap bertanggung jawab atas scope dan approval. Lakukan polling berkala karena perubahan vacancy tidak tercermin di `nextEffectiveChangeAtUtc`.
+
+---
+
 ## 4. Panduan Pengembangan Fitur Baru
 
 Jika Anda atau agen AI lain ingin menambahkan fitur baru di backend:
