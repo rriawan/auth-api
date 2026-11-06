@@ -8,6 +8,10 @@ import type {
   OfficePageDto,
   OfficeStructureDto,
   PositionSummaryDto,
+  TemplateApplyPreviewDto,
+  TemplateApplyResultDto,
+  TemplateMutationResultDto,
+  TemplateSummaryDto,
   UnitSummaryDto,
 } from "./employee-types";
 
@@ -40,6 +44,29 @@ export const organizationApi = {
   createPosition: (body: unknown) => write("POST", "/positions", body),
   addPositionVersion: (id: string, body: unknown, version: string) =>
     write("POST", `/positions/${enc(id)}/versions`, body, version),
+
+  templates: (classification?: string | null): Promise<TemplateSummaryDto[]> =>
+    apiFetch<TemplateSummaryDto[]>(
+      `${base}/templates${classification ? `?classification=${enc(classification)}` : ""}`
+    ),
+
+  publishTemplate: (id: string, body: unknown, version: string) =>
+    apiFetch<TemplateMutationResultDto>(`${base}/templates/${enc(id)}/publish`, {
+      method: "POST",
+      body,
+      headers: { "If-Match": version },
+    }),
+
+  previewTemplate: (officeId: string, templateId: string, effectiveFrom: string): Promise<TemplateApplyPreviewDto> =>
+    apiFetch<TemplateApplyPreviewDto>(
+      `${base}/offices/${enc(officeId)}/template-applications/preview?templateId=${enc(templateId)}&effectiveFrom=${enc(effectiveFrom)}`
+    ),
+
+  applyTemplate: (officeId: string, body: unknown) =>
+    apiFetch<TemplateApplyResultDto>(`${base}/offices/${enc(officeId)}/template-applications`, {
+      method: "POST",
+      body,
+    }),
 
   classifications: (): Promise<ClassificationDto[]> =>
     apiFetch<ClassificationDto[]>(`${base}/classifications`),

@@ -49,6 +49,8 @@ public enum AuditEventType
     OrganizationPositionCreated,
     OrganizationPositionVersioned,
     EmployeeAccountDeactivated,
-    EmployeePlacementRevised
+    EmployeePlacementRevised,
+    OrganizationTemplatePublished,
+    OrganizationTemplateApplied
 }
 

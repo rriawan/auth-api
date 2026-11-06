@@ -232,3 +232,7 @@ Untuk menambahkan halaman atau fitur baru di dashboard:
    - Jalankan linter: `npm run lint`
    - Jalankan type checking: `npx tsc --noEmit`
 
+
+### Panel Template struktur (`/organization/offices/[id]`)
+
+Komponen `components/organization/template-panel.tsx` (hanya untuk pemegang `organization.write`, hanya tampil bila struktur kantor kosong). Aksi server `publishTemplateAction`, `previewTemplateAction`, `applyTemplateAction` di `components/organization/actions/organization.ts`. Dialog terapkan membuat satu `idempotencyKey` (UUID) per pembukaan dialog; tombol Terapkan aktif hanya bila pratinjau `canApply` dan alasan terisi.

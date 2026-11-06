@@ -2,6 +2,7 @@ import { formatDate, isInForce, periodLabel, todayJakarta } from "@/components/e
 import { PositionsTable, UnitsTable } from "@/components/organization/master-tables";
 import { OfficeVersionDialog } from "@/components/organization/org-dialogs";
 import { StructureTree } from "@/components/organization/structure-tree";
+import { TemplatePanel } from "@/components/organization/template-panel";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,6 +30,7 @@ import type {
   OfficeDetailDto,
   OfficeStructureDto,
   PositionSummaryDto,
+  TemplateSummaryDto,
   UnitSummaryDto,
 } from "@/lib/api/employee-types";
 import { getErrorMessage } from "@/lib/api/errors";
@@ -68,6 +70,20 @@ export default async function OfficeDetailPage({ params, searchParams }: OfficeD
     ]);
   } catch (err) {
     fetchError = getErrorMessage(err);
+  }
+
+  let templates: TemplateSummaryDto[] = [];
+  if (office && structure && structure.units.length === 0) {
+    const cls = office.versions.find(
+      (v) => v.supersededAtUtc === null && isInForce(v.effectiveFrom, v.effectiveToExclusive, todayJakarta())
+    )?.classificationCode;
+    if (cls) {
+      try {
+        templates = await organizationApi.templates(cls);
+      } catch {
+        templates = [];
+      }
+    }
   }
 
   if (fetchError || !office || !structure) {
@@ -124,6 +140,10 @@ export default async function OfficeDetailPage({ params, searchParams }: OfficeD
           today={today}
         />
       </div>
+
+      {structure.units.length === 0 && currentVersion && (
+        <TemplatePanel officeId={office.id} classificationCode={currentVersion.classificationCode} templates={templates} today={today} />
+      )}
 
       <Tabs defaultValue="structure" className="space-y-4">
         <TabsList className="bg-neutral-100 dark:bg-slate-800/80 p-1">

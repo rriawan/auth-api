@@ -107,7 +107,7 @@ public sealed class EmployeeMutationFixture : IDisposable
         {
             if (context is null || IsRestoring) return;
             foreach (var entry in context.ChangeTracker.Entries()
-                .Where(x => x.Entity is Employee or Office or OrgUnit or Position && x.State is EntityState.Added or EntityState.Modified))
+                .Where(x => x.Entity is Employee or Office or OrgUnit or Position or StructureTemplate && x.State is EntityState.Added or EntityState.Modified))
                 entry.Property("RowVersion").CurrentValue = BitConverter.GetBytes(Interlocked.Increment(ref _sequence));
         }
         public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)

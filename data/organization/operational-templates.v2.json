@@ -1,0 +1,2308 @@
+{
+    "schemaVersion":  1,
+    "state":  "DRAFT",
+    "notes":  "Versi 2 template draft: menambahkan level jabatan (Kepala Seksi = KASI, Pelaksana = PELAKSANA) pada template operasional, dan jabatan Pelaksana (kapasitas banyak) di bawah setiap Kepala Seksi pada template HEAD_OFFICE. Kepala Cabang/Kepala Pemasar sengaja tanpa level karena setingkat Kadiv/Kabag/Kasi bergantung pemangku. Kode unit dan posisi adalah kode teknis usulan. ROOT hanya wadah template. Template ini tidak menetapkan role atau permission authorization.",
+    "levels":  [
+                   {
+                       "code":  "DIREKTUR",
+                       "name":  "Direktur",
+                       "displayOrder":  1
+                   },
+                   {
+                       "code":  "KADIV",
+                       "name":  "Kepala Divisi / Setingkat",
+                       "displayOrder":  2
+                   },
+                   {
+                       "code":  "KABAG",
+                       "name":  "Kepala Bagian",
+                       "displayOrder":  3
+                   },
+                   {
+                       "code":  "KASI",
+                       "name":  "Kepala Seksi",
+                       "displayOrder":  4
+                   },
+                   {
+                       "code":  "PELAKSANA",
+                       "name":  "Pelaksana",
+                       "displayOrder":  5
+                   }
+               ],
+    "templates":  [
+                      {
+                          "classificationCode":  "CAB-I",
+                          "version":  2,
+                          "units":  [
+                                        {
+                                            "code":  "ROOT",
+                                            "parentCode":  null,
+                                            "type":  "OTHER",
+                                            "name":  "Kantor Cabang"
+                                        },
+                                        {
+                                            "code":  "MARKETING",
+                                            "parentCode":  "ROOT",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran"
+                                        },
+                                        {
+                                            "code":  "TECHNICAL",
+                                            "parentCode":  "ROOT",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Teknik"
+                                        },
+                                        {
+                                            "code":  "FINANCE",
+                                            "parentCode":  "ROOT",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Keuangan, SDM, dan Umum"
+                                        }
+                                    ],
+                          "positions":  [
+                                            {
+                                                "code":  "HEAD",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  null,
+                                                "name":  "Kepala Cabang",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  null
+                                            },
+                                            {
+                                                "code":  "HEAD_MARKETING",
+                                                "unitCode":  "MARKETING",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Kepala Seksi Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_TECHNICAL",
+                                                "unitCode":  "TECHNICAL",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Kepala Seksi Teknik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_FINANCE",
+                                                "unitCode":  "FINANCE",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Kepala Seksi Keuangan, SDM, dan Umum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "STAFF_MARKETING",
+                                                "unitCode":  "MARKETING",
+                                                "reportsToCode":  "HEAD_MARKETING",
+                                                "name":  "Pelaksana Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_UNDERWRITING",
+                                                "unitCode":  "TECHNICAL",
+                                                "reportsToCode":  "HEAD_TECHNICAL",
+                                                "name":  "Pelaksana Akseptasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_CLAIMS_SUBROGATION",
+                                                "unitCode":  "TECHNICAL",
+                                                "reportsToCode":  "HEAD_TECHNICAL",
+                                                "name":  "Pelaksana Klaim \u0026 Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_FINANCE",
+                                                "unitCode":  "FINANCE",
+                                                "reportsToCode":  "HEAD_FINANCE",
+                                                "name":  "Pelaksana Keuangan, SDM, dan Umum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            }
+                                        ]
+                      },
+                      {
+                          "classificationCode":  "CAB-II",
+                          "version":  2,
+                          "units":  [
+                                        {
+                                            "code":  "ROOT",
+                                            "parentCode":  null,
+                                            "type":  "OTHER",
+                                            "name":  "Kantor Cabang"
+                                        },
+                                        {
+                                            "code":  "MARKETING",
+                                            "parentCode":  "ROOT",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran"
+                                        },
+                                        {
+                                            "code":  "OPERATIONS",
+                                            "parentCode":  "ROOT",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Operasional"
+                                        }
+                                    ],
+                          "positions":  [
+                                            {
+                                                "code":  "HEAD",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  null,
+                                                "name":  "Kepala Cabang",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  null
+                                            },
+                                            {
+                                                "code":  "HEAD_MARKETING",
+                                                "unitCode":  "MARKETING",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Kepala Seksi Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_OPERATIONS",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Kepala Seksi Operasional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "STAFF_MARKETING",
+                                                "unitCode":  "MARKETING",
+                                                "reportsToCode":  "HEAD_MARKETING",
+                                                "name":  "Pelaksana Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_UNDERWRITING",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD_OPERATIONS",
+                                                "name":  "Pelaksana Akseptasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_CLAIMS_SUBROGATION",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD_OPERATIONS",
+                                                "name":  "Pelaksana Klaim \u0026 Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_FINANCE",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD_OPERATIONS",
+                                                "name":  "Pelaksana Keuangan, SDM, dan Umum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            }
+                                        ]
+                      },
+                      {
+                          "classificationCode":  "CAB-III",
+                          "version":  2,
+                          "units":  [
+                                        {
+                                            "code":  "ROOT",
+                                            "parentCode":  null,
+                                            "type":  "OTHER",
+                                            "name":  "Kantor Cabang"
+                                        },
+                                        {
+                                            "code":  "OPERATIONS",
+                                            "parentCode":  "ROOT",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Operasional"
+                                        }
+                                    ],
+                          "positions":  [
+                                            {
+                                                "code":  "HEAD",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  null,
+                                                "name":  "Kepala Cabang",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  null
+                                            },
+                                            {
+                                                "code":  "HEAD_OPERATIONS",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Kepala Seksi Operasional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "STAFF_MARKETING",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Pelaksana Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_UNDERWRITING",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD_OPERATIONS",
+                                                "name":  "Pelaksana Akseptasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_CLAIMS_SUBROGATION",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD_OPERATIONS",
+                                                "name":  "Pelaksana Klaim \u0026 Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_FINANCE",
+                                                "unitCode":  "OPERATIONS",
+                                                "reportsToCode":  "HEAD_OPERATIONS",
+                                                "name":  "Pelaksana Keuangan, SDM, dan Umum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            }
+                                        ]
+                      },
+                      {
+                          "classificationCode":  "PEMASAR",
+                          "version":  2,
+                          "units":  [
+                                        {
+                                            "code":  "ROOT",
+                                            "parentCode":  null,
+                                            "type":  "OTHER",
+                                            "name":  "Kantor Pemasar"
+                                        }
+                                    ],
+                          "positions":  [
+                                            {
+                                                "code":  "HEAD",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  null,
+                                                "name":  "Kepala Pemasar",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  null
+                                            },
+                                            {
+                                                "code":  "STAFF_ADMIN",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Pelaksana Administrasi Pemasar",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_FINANCE",
+                                                "unitCode":  "ROOT",
+                                                "reportsToCode":  "HEAD",
+                                                "name":  "Pelaksana Keuangan Pemasar",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            }
+                                        ]
+                      },
+                      {
+                          "classificationCode":  "HEAD_OFFICE",
+                          "version":  2,
+                          "units":  [
+                                        {
+                                            "code":  "DIR_01",
+                                            "parentCode":  null,
+                                            "type":  "DIRECTORATE",
+                                            "name":  "Direktur Utama"
+                                        },
+                                        {
+                                            "code":  "DIR_02",
+                                            "parentCode":  null,
+                                            "type":  "DIRECTORATE",
+                                            "name":  "Direktur Operasional"
+                                        },
+                                        {
+                                            "code":  "DIR_03",
+                                            "parentCode":  null,
+                                            "type":  "DIRECTORATE",
+                                            "name":  "Direktur Pemasaran"
+                                        },
+                                        {
+                                            "code":  "DIV_01",
+                                            "parentCode":  "DIR_02",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Keuangan \u0026 Akuntansi"
+                                        },
+                                        {
+                                            "code":  "DIV_02",
+                                            "parentCode":  "DIR_02",
+                                            "type":  "DIVISION",
+                                            "name":  "Aktuaris Perusahaan"
+                                        },
+                                        {
+                                            "code":  "DIV_03",
+                                            "parentCode":  "DIR_02",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Akseptasi \u0026 Reasuransi"
+                                        },
+                                        {
+                                            "code":  "DIV_04",
+                                            "parentCode":  "DIR_02",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Klaim \u0026 Subrogasi"
+                                        },
+                                        {
+                                            "code":  "DIV_05",
+                                            "parentCode":  "DIR_02",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi SDM \u0026 Umum"
+                                        },
+                                        {
+                                            "code":  "DIV_06",
+                                            "parentCode":  "DIR_01",
+                                            "type":  "DIVISION",
+                                            "name":  "Sekretaris Perusahaan"
+                                        },
+                                        {
+                                            "code":  "DIV_07",
+                                            "parentCode":  "DIR_01",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Perencanaan \u0026 Strategi Korporasi"
+                                        },
+                                        {
+                                            "code":  "DIV_08",
+                                            "parentCode":  "DIR_01",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Satuan Pengawasan Internal"
+                                        },
+                                        {
+                                            "code":  "DIV_09",
+                                            "parentCode":  "DIR_01",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Manajemen Risiko, Kepatuhan \u0026 Hukum"
+                                        },
+                                        {
+                                            "code":  "DIV_10",
+                                            "parentCode":  "DIR_03",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Pemasaran"
+                                        },
+                                        {
+                                            "code":  "DIV_11",
+                                            "parentCode":  "DIR_03",
+                                            "type":  "DIVISION",
+                                            "name":  "Divisi Teknologi Informasi"
+                                        },
+                                        {
+                                            "code":  "BAG_01",
+                                            "parentCode":  "DIV_01",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Keuangan \u0026 Investasi"
+                                        },
+                                        {
+                                            "code":  "BAG_02",
+                                            "parentCode":  "DIV_01",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Akuntansi \u0026 Pajak"
+                                        },
+                                        {
+                                            "code":  "BAG_03",
+                                            "parentCode":  "DIV_02",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Aktuaria \u0026 Statistik"
+                                        },
+                                        {
+                                            "code":  "BAG_04",
+                                            "parentCode":  "DIV_03",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Akseptasi Asuransi Pembiayaan"
+                                        },
+                                        {
+                                            "code":  "BAG_05",
+                                            "parentCode":  "DIV_03",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Akseptasi Asuransi Non Pembiayaan \u0026 Reasuransi"
+                                        },
+                                        {
+                                            "code":  "BAG_06",
+                                            "parentCode":  "DIV_04",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Klaim Asuransi Pembiayaan"
+                                        },
+                                        {
+                                            "code":  "BAG_07",
+                                            "parentCode":  "DIV_04",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Klaim Asuransi Non Pembiayaan"
+                                        },
+                                        {
+                                            "code":  "BAG_08",
+                                            "parentCode":  "DIV_04",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Subrogasi"
+                                        },
+                                        {
+                                            "code":  "BAG_09",
+                                            "parentCode":  "DIV_05",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian SDM"
+                                        },
+                                        {
+                                            "code":  "BAG_10",
+                                            "parentCode":  "DIV_05",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Umum"
+                                        },
+                                        {
+                                            "code":  "BAG_11",
+                                            "parentCode":  "DIV_06",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Sekretariat"
+                                        },
+                                        {
+                                            "code":  "BAG_12",
+                                            "parentCode":  "DIV_06",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Humas \u0026 Protokol"
+                                        },
+                                        {
+                                            "code":  "BAG_13",
+                                            "parentCode":  "DIV_07",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Perencanaan Korporasi"
+                                        },
+                                        {
+                                            "code":  "BAG_14",
+                                            "parentCode":  "DIV_07",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Strategi Korporasi"
+                                        },
+                                        {
+                                            "code":  "BAG_15",
+                                            "parentCode":  "DIV_08",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Satuan Pengawasan Internal"
+                                        },
+                                        {
+                                            "code":  "BAG_16",
+                                            "parentCode":  "DIV_09",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Manajemen Risiko"
+                                        },
+                                        {
+                                            "code":  "BAG_17",
+                                            "parentCode":  "DIV_09",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Kepatuhan \u0026 Hukum"
+                                        },
+                                        {
+                                            "code":  "BAG_18",
+                                            "parentCode":  "DIV_09",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian UKPN \u0026 UPK dan APU PPT"
+                                        },
+                                        {
+                                            "code":  "BAG_19",
+                                            "parentCode":  "DIV_10",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Pemasaran 1"
+                                        },
+                                        {
+                                            "code":  "BAG_20",
+                                            "parentCode":  "DIV_10",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Pemasaran 2"
+                                        },
+                                        {
+                                            "code":  "BAG_21",
+                                            "parentCode":  "DIV_10",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Pemasaran 3"
+                                        },
+                                        {
+                                            "code":  "BAG_22",
+                                            "parentCode":  "DIV_10",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Pemasaran 4"
+                                        },
+                                        {
+                                            "code":  "BAG_23",
+                                            "parentCode":  "DIV_11",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Pengembangan Teknologi Informasi"
+                                        },
+                                        {
+                                            "code":  "BAG_24",
+                                            "parentCode":  "DIV_11",
+                                            "type":  "DEPARTMENT",
+                                            "name":  "Bagian Operasional \u0026 Perencanaan Teknologi Informasi"
+                                        },
+                                        {
+                                            "code":  "SEK_01",
+                                            "parentCode":  "BAG_01",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Keuangan"
+                                        },
+                                        {
+                                            "code":  "SEK_02",
+                                            "parentCode":  "BAG_01",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Investasi"
+                                        },
+                                        {
+                                            "code":  "SEK_03",
+                                            "parentCode":  "BAG_01",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Inkaso"
+                                        },
+                                        {
+                                            "code":  "SEK_04",
+                                            "parentCode":  "BAG_02",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Akuntansi"
+                                        },
+                                        {
+                                            "code":  "SEK_05",
+                                            "parentCode":  "BAG_02",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pajak"
+                                        },
+                                        {
+                                            "code":  "SEK_06",
+                                            "parentCode":  "BAG_03",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Aktuaria"
+                                        },
+                                        {
+                                            "code":  "SEK_07",
+                                            "parentCode":  "BAG_03",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Statistik"
+                                        },
+                                        {
+                                            "code":  "SEK_08",
+                                            "parentCode":  "BAG_04",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Akseptasi Asuransi Pembiayaan Konsumtif CBC"
+                                        },
+                                        {
+                                            "code":  "SEK_09",
+                                            "parentCode":  "BAG_04",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Akseptasi Asuransi Pembiayaan Konsumtif Non CBC"
+                                        },
+                                        {
+                                            "code":  "SEK_10",
+                                            "parentCode":  "BAG_04",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Akseptasi Asuransi Pembiayaan Produktif \u0026 Suretyship"
+                                        },
+                                        {
+                                            "code":  "SEK_11",
+                                            "parentCode":  "BAG_04",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Adm. Teknik"
+                                        },
+                                        {
+                                            "code":  "SEK_12",
+                                            "parentCode":  "BAG_05",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Akseptasi Asuransi Marine"
+                                        },
+                                        {
+                                            "code":  "SEK_13",
+                                            "parentCode":  "BAG_05",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Akseptasi Asuransi Non Marine"
+                                        },
+                                        {
+                                            "code":  "SEK_14",
+                                            "parentCode":  "BAG_05",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Reasuransi"
+                                        },
+                                        {
+                                            "code":  "SEK_15",
+                                            "parentCode":  "BAG_06",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Klaim Wilayah Jawa"
+                                        },
+                                        {
+                                            "code":  "SEK_16",
+                                            "parentCode":  "BAG_06",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Klaim Wilayah Sumatera"
+                                        },
+                                        {
+                                            "code":  "SEK_17",
+                                            "parentCode":  "BAG_06",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Klaim Wilayah Non Jawa \u0026 Sumatera"
+                                        },
+                                        {
+                                            "code":  "SEK_18",
+                                            "parentCode":  "BAG_07",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Klaim Asuransi GA \u0026 Health"
+                                        },
+                                        {
+                                            "code":  "SEK_19",
+                                            "parentCode":  "BAG_07",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Klaim Asuransi Non GA \u0026 Health"
+                                        },
+                                        {
+                                            "code":  "SEK_20",
+                                            "parentCode":  "BAG_08",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Subrogasi"
+                                        },
+                                        {
+                                            "code":  "SEK_21",
+                                            "parentCode":  "BAG_09",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Adm. Kepegawaian"
+                                        },
+                                        {
+                                            "code":  "SEK_22",
+                                            "parentCode":  "BAG_09",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pelatihan \u0026 Pengembangan"
+                                        },
+                                        {
+                                            "code":  "SEK_23",
+                                            "parentCode":  "BAG_10",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Logistik"
+                                        },
+                                        {
+                                            "code":  "SEK_24",
+                                            "parentCode":  "BAG_10",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Arsip \u0026 Pengelolaan Aset"
+                                        },
+                                        {
+                                            "code":  "SEK_25",
+                                            "parentCode":  "BAG_11",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Sekretariat"
+                                        },
+                                        {
+                                            "code":  "SEK_26",
+                                            "parentCode":  "BAG_12",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Humas \u0026 Protokol"
+                                        },
+                                        {
+                                            "code":  "SEK_27",
+                                            "parentCode":  "BAG_13",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Perencanaan Korporasi"
+                                        },
+                                        {
+                                            "code":  "SEK_28",
+                                            "parentCode":  "BAG_14",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Strategi Korporasi"
+                                        },
+                                        {
+                                            "code":  "SEK_29",
+                                            "parentCode":  "BAG_15",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Satuan Pengawasan Internal 1"
+                                        },
+                                        {
+                                            "code":  "SEK_30",
+                                            "parentCode":  "BAG_15",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Satuan Pengawasan Internal 2"
+                                        },
+                                        {
+                                            "code":  "SEK_31",
+                                            "parentCode":  "BAG_15",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Satuan Pengawasan Internal 3"
+                                        },
+                                        {
+                                            "code":  "SEK_32",
+                                            "parentCode":  "BAG_16",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Manajemen Risiko Transaksional"
+                                        },
+                                        {
+                                            "code":  "SEK_33",
+                                            "parentCode":  "BAG_16",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Manajemen Risiko Non Transaksional"
+                                        },
+                                        {
+                                            "code":  "SEK_34",
+                                            "parentCode":  "BAG_17",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Kepatuhan"
+                                        },
+                                        {
+                                            "code":  "SEK_35",
+                                            "parentCode":  "BAG_17",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Hukum"
+                                        },
+                                        {
+                                            "code":  "SEK_36",
+                                            "parentCode":  "BAG_18",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi UKPN, UPK \u0026 APU PPT"
+                                        },
+                                        {
+                                            "code":  "SEK_37",
+                                            "parentCode":  "BAG_18",
+                                            "type":  "SECTION",
+                                            "name":  "Unit Kerja Data Nasabah"
+                                        },
+                                        {
+                                            "code":  "SEK_38",
+                                            "parentCode":  "BAG_19",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Wilayah Sumatera \u0026 Sulawesi"
+                                        },
+                                        {
+                                            "code":  "SEK_39",
+                                            "parentCode":  "BAG_19",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Wilayah Non Sumatera \u0026 Sulawesi"
+                                        },
+                                        {
+                                            "code":  "SEK_40",
+                                            "parentCode":  "BAG_20",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Non Broker BUS"
+                                        },
+                                        {
+                                            "code":  "SEK_41",
+                                            "parentCode":  "BAG_20",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Broker BUS"
+                                        },
+                                        {
+                                            "code":  "SEK_42",
+                                            "parentCode":  "BAG_20",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Travel"
+                                        },
+                                        {
+                                            "code":  "SEK_43",
+                                            "parentCode":  "BAG_21",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Broker"
+                                        },
+                                        {
+                                            "code":  "SEK_44",
+                                            "parentCode":  "BAG_21",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Agent \u0026 Direct"
+                                        },
+                                        {
+                                            "code":  "SEK_45",
+                                            "parentCode":  "BAG_22",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Administrasi"
+                                        },
+                                        {
+                                            "code":  "SEK_46",
+                                            "parentCode":  "BAG_22",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pemasaran Pengembangan \u0026 Monitoring Produk"
+                                        },
+                                        {
+                                            "code":  "SEK_47",
+                                            "parentCode":  "BAG_23",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pengembangan Teknologi Informasi Pendukung Bisnis"
+                                        },
+                                        {
+                                            "code":  "SEK_48",
+                                            "parentCode":  "BAG_23",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Pengembangan Teknologi Informasi Pendukung Operasional"
+                                        },
+                                        {
+                                            "code":  "SEK_49",
+                                            "parentCode":  "BAG_24",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Perencanaan \u0026 Tata Kelola Teknologi Informasi"
+                                        },
+                                        {
+                                            "code":  "SEK_50",
+                                            "parentCode":  "BAG_24",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Operasional Teknologi Informasi"
+                                        },
+                                        {
+                                            "code":  "SEK_51",
+                                            "parentCode":  "BAG_24",
+                                            "type":  "SECTION",
+                                            "name":  "Seksi Database \u0026 Administrasi Teknologi Informasi"
+                                        }
+                                    ],
+                          "positions":  [
+                                            {
+                                                "code":  "HEAD_DIR_01",
+                                                "unitCode":  "DIR_01",
+                                                "reportsToCode":  null,
+                                                "name":  "Direktur Utama",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "DIREKTUR"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIR_02",
+                                                "unitCode":  "DIR_02",
+                                                "reportsToCode":  null,
+                                                "name":  "Direktur Operasional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "DIREKTUR"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIR_03",
+                                                "unitCode":  "DIR_03",
+                                                "reportsToCode":  null,
+                                                "name":  "Direktur Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "DIREKTUR"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_01",
+                                                "unitCode":  "DIV_01",
+                                                "reportsToCode":  "HEAD_DIR_02",
+                                                "name":  "Kepala Divisi Keuangan \u0026 Akuntansi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_02",
+                                                "unitCode":  "DIV_02",
+                                                "reportsToCode":  "HEAD_DIR_02",
+                                                "name":  "Aktuaris Perusahaan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_03",
+                                                "unitCode":  "DIV_03",
+                                                "reportsToCode":  "HEAD_DIR_02",
+                                                "name":  "Kepala Divisi Akseptasi \u0026 Reasuransi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_04",
+                                                "unitCode":  "DIV_04",
+                                                "reportsToCode":  "HEAD_DIR_02",
+                                                "name":  "Kepala Divisi Klaim \u0026 Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_05",
+                                                "unitCode":  "DIV_05",
+                                                "reportsToCode":  "HEAD_DIR_02",
+                                                "name":  "Kepala Divisi SDM \u0026 Umum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_06",
+                                                "unitCode":  "DIV_06",
+                                                "reportsToCode":  "HEAD_DIR_01",
+                                                "name":  "Sekretaris Perusahaan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_07",
+                                                "unitCode":  "DIV_07",
+                                                "reportsToCode":  "HEAD_DIR_01",
+                                                "name":  "Kepala Divisi Perencanaan \u0026 Strategi Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_08",
+                                                "unitCode":  "DIV_08",
+                                                "reportsToCode":  "HEAD_DIR_01",
+                                                "name":  "Kepala Divisi Satuan Pengawasan Internal",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_09",
+                                                "unitCode":  "DIV_09",
+                                                "reportsToCode":  "HEAD_DIR_01",
+                                                "name":  "Kepala Divisi Manajemen Risiko, Kepatuhan \u0026 Hukum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_10",
+                                                "unitCode":  "DIV_10",
+                                                "reportsToCode":  "HEAD_DIR_03",
+                                                "name":  "Kepala Divisi Pemasaran",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_DIV_11",
+                                                "unitCode":  "DIV_11",
+                                                "reportsToCode":  "HEAD_DIR_03",
+                                                "name":  "Kepala Divisi Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KADIV"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_01",
+                                                "unitCode":  "BAG_01",
+                                                "reportsToCode":  "HEAD_DIV_01",
+                                                "name":  "Kepala Bagian Keuangan \u0026 Investasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_02",
+                                                "unitCode":  "BAG_02",
+                                                "reportsToCode":  "HEAD_DIV_01",
+                                                "name":  "Kepala Bagian Akuntansi \u0026 Pajak",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_03",
+                                                "unitCode":  "BAG_03",
+                                                "reportsToCode":  "HEAD_DIV_02",
+                                                "name":  "Kepala Bagian Aktuaria \u0026 Statistik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_04",
+                                                "unitCode":  "BAG_04",
+                                                "reportsToCode":  "HEAD_DIV_03",
+                                                "name":  "Kepala Bagian Akseptasi Asuransi Pembiayaan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_05",
+                                                "unitCode":  "BAG_05",
+                                                "reportsToCode":  "HEAD_DIV_03",
+                                                "name":  "Kepala Bagian Akseptasi Asuransi Non Pembiayaan \u0026 Reasuransi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_06",
+                                                "unitCode":  "BAG_06",
+                                                "reportsToCode":  "HEAD_DIV_04",
+                                                "name":  "Kepala Bagian Klaim Asuransi Pembiayaan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_07",
+                                                "unitCode":  "BAG_07",
+                                                "reportsToCode":  "HEAD_DIV_04",
+                                                "name":  "Kepala Bagian Klaim Asuransi Non Pembiayaan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_08",
+                                                "unitCode":  "BAG_08",
+                                                "reportsToCode":  "HEAD_DIV_04",
+                                                "name":  "Kepala Bagian Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_09",
+                                                "unitCode":  "BAG_09",
+                                                "reportsToCode":  "HEAD_DIV_05",
+                                                "name":  "Kepala Bagian SDM",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_10",
+                                                "unitCode":  "BAG_10",
+                                                "reportsToCode":  "HEAD_DIV_05",
+                                                "name":  "Kepala Bagian Umum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_11",
+                                                "unitCode":  "BAG_11",
+                                                "reportsToCode":  "HEAD_DIV_06",
+                                                "name":  "Kepala Bagian Sekretariat",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_12",
+                                                "unitCode":  "BAG_12",
+                                                "reportsToCode":  "HEAD_DIV_06",
+                                                "name":  "Kepala Bagian Humas \u0026 Protokol",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_13",
+                                                "unitCode":  "BAG_13",
+                                                "reportsToCode":  "HEAD_DIV_07",
+                                                "name":  "Kepala Bagian Perencanaan Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_14",
+                                                "unitCode":  "BAG_14",
+                                                "reportsToCode":  "HEAD_DIV_07",
+                                                "name":  "Kepala Bagian Strategi Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_15",
+                                                "unitCode":  "BAG_15",
+                                                "reportsToCode":  "HEAD_DIV_08",
+                                                "name":  "Kepala Bagian Satuan Pengawasan Internal",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_16",
+                                                "unitCode":  "BAG_16",
+                                                "reportsToCode":  "HEAD_DIV_09",
+                                                "name":  "Kepala Bagian Manajemen Risiko",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_17",
+                                                "unitCode":  "BAG_17",
+                                                "reportsToCode":  "HEAD_DIV_09",
+                                                "name":  "Kepala Bagian Kepatuhan \u0026 Hukum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_18",
+                                                "unitCode":  "BAG_18",
+                                                "reportsToCode":  "HEAD_DIV_09",
+                                                "name":  "Kepala Bagian UKPN \u0026 UPK dan APU PPT",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_19",
+                                                "unitCode":  "BAG_19",
+                                                "reportsToCode":  "HEAD_DIV_10",
+                                                "name":  "Kepala Bagian Pemasaran 1",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_20",
+                                                "unitCode":  "BAG_20",
+                                                "reportsToCode":  "HEAD_DIV_10",
+                                                "name":  "Kepala Bagian Pemasaran 2",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_21",
+                                                "unitCode":  "BAG_21",
+                                                "reportsToCode":  "HEAD_DIV_10",
+                                                "name":  "Kepala Bagian Pemasaran 3",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_22",
+                                                "unitCode":  "BAG_22",
+                                                "reportsToCode":  "HEAD_DIV_10",
+                                                "name":  "Kepala Bagian Pemasaran 4",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_23",
+                                                "unitCode":  "BAG_23",
+                                                "reportsToCode":  "HEAD_DIV_11",
+                                                "name":  "Kepala Bagian Pengembangan Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_BAG_24",
+                                                "unitCode":  "BAG_24",
+                                                "reportsToCode":  "HEAD_DIV_11",
+                                                "name":  "Kepala Bagian Operasional \u0026 Perencanaan Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KABAG"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_01",
+                                                "unitCode":  "SEK_01",
+                                                "reportsToCode":  "HEAD_BAG_01",
+                                                "name":  "Kepala Seksi Keuangan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_02",
+                                                "unitCode":  "SEK_02",
+                                                "reportsToCode":  "HEAD_BAG_01",
+                                                "name":  "Kepala Seksi Investasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_03",
+                                                "unitCode":  "SEK_03",
+                                                "reportsToCode":  "HEAD_BAG_01",
+                                                "name":  "Kepala Seksi Inkaso",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_04",
+                                                "unitCode":  "SEK_04",
+                                                "reportsToCode":  "HEAD_BAG_02",
+                                                "name":  "Kepala Seksi Akuntansi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_05",
+                                                "unitCode":  "SEK_05",
+                                                "reportsToCode":  "HEAD_BAG_02",
+                                                "name":  "Kepala Seksi Pajak",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_06",
+                                                "unitCode":  "SEK_06",
+                                                "reportsToCode":  "HEAD_BAG_03",
+                                                "name":  "Kepala Seksi Aktuaria",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_07",
+                                                "unitCode":  "SEK_07",
+                                                "reportsToCode":  "HEAD_BAG_03",
+                                                "name":  "Kepala Seksi Statistik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_08",
+                                                "unitCode":  "SEK_08",
+                                                "reportsToCode":  "HEAD_BAG_04",
+                                                "name":  "Kepala Seksi Akseptasi Asuransi Pembiayaan Konsumtif CBC",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_09",
+                                                "unitCode":  "SEK_09",
+                                                "reportsToCode":  "HEAD_BAG_04",
+                                                "name":  "Kepala Seksi Akseptasi Asuransi Pembiayaan Konsumtif Non CBC",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_10",
+                                                "unitCode":  "SEK_10",
+                                                "reportsToCode":  "HEAD_BAG_04",
+                                                "name":  "Kepala Seksi Akseptasi Asuransi Pembiayaan Produktif \u0026 Suretyship",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_11",
+                                                "unitCode":  "SEK_11",
+                                                "reportsToCode":  "HEAD_BAG_04",
+                                                "name":  "Kepala Seksi Adm. Teknik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_12",
+                                                "unitCode":  "SEK_12",
+                                                "reportsToCode":  "HEAD_BAG_05",
+                                                "name":  "Kepala Seksi Akseptasi Asuransi Marine",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_13",
+                                                "unitCode":  "SEK_13",
+                                                "reportsToCode":  "HEAD_BAG_05",
+                                                "name":  "Kepala Seksi Akseptasi Asuransi Non Marine",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_14",
+                                                "unitCode":  "SEK_14",
+                                                "reportsToCode":  "HEAD_BAG_05",
+                                                "name":  "Kepala Seksi Reasuransi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_15",
+                                                "unitCode":  "SEK_15",
+                                                "reportsToCode":  "HEAD_BAG_06",
+                                                "name":  "Kepala Seksi Klaim Wilayah Jawa",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_16",
+                                                "unitCode":  "SEK_16",
+                                                "reportsToCode":  "HEAD_BAG_06",
+                                                "name":  "Kepala Seksi Klaim Wilayah Sumatera",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_17",
+                                                "unitCode":  "SEK_17",
+                                                "reportsToCode":  "HEAD_BAG_06",
+                                                "name":  "Kepala Seksi Klaim Wilayah Non Jawa \u0026 Sumatera",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_18",
+                                                "unitCode":  "SEK_18",
+                                                "reportsToCode":  "HEAD_BAG_07",
+                                                "name":  "Kepala Seksi Klaim Asuransi GA \u0026 Health",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_19",
+                                                "unitCode":  "SEK_19",
+                                                "reportsToCode":  "HEAD_BAG_07",
+                                                "name":  "Kepala Seksi Klaim Asuransi Non GA \u0026 Health",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_20",
+                                                "unitCode":  "SEK_20",
+                                                "reportsToCode":  "HEAD_BAG_08",
+                                                "name":  "Kepala Seksi Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_21",
+                                                "unitCode":  "SEK_21",
+                                                "reportsToCode":  "HEAD_BAG_09",
+                                                "name":  "Kepala Seksi Adm. Kepegawaian",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_22",
+                                                "unitCode":  "SEK_22",
+                                                "reportsToCode":  "HEAD_BAG_09",
+                                                "name":  "Kepala Seksi Pelatihan \u0026 Pengembangan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_23",
+                                                "unitCode":  "SEK_23",
+                                                "reportsToCode":  "HEAD_BAG_10",
+                                                "name":  "Kepala Seksi Logistik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_24",
+                                                "unitCode":  "SEK_24",
+                                                "reportsToCode":  "HEAD_BAG_10",
+                                                "name":  "Kepala Seksi Arsip \u0026 Pengelolaan Aset",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_25",
+                                                "unitCode":  "SEK_25",
+                                                "reportsToCode":  "HEAD_BAG_11",
+                                                "name":  "Kepala Seksi Sekretariat",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_26",
+                                                "unitCode":  "SEK_26",
+                                                "reportsToCode":  "HEAD_BAG_12",
+                                                "name":  "Kepala Seksi Humas \u0026 Protokol",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_27",
+                                                "unitCode":  "SEK_27",
+                                                "reportsToCode":  "HEAD_BAG_13",
+                                                "name":  "Kepala Seksi Perencanaan Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_28",
+                                                "unitCode":  "SEK_28",
+                                                "reportsToCode":  "HEAD_BAG_14",
+                                                "name":  "Kepala Seksi Strategi Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_29",
+                                                "unitCode":  "SEK_29",
+                                                "reportsToCode":  "HEAD_BAG_15",
+                                                "name":  "Kepala Seksi Satuan Pengawasan Internal 1",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_30",
+                                                "unitCode":  "SEK_30",
+                                                "reportsToCode":  "HEAD_BAG_15",
+                                                "name":  "Kepala Seksi Satuan Pengawasan Internal 2",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_31",
+                                                "unitCode":  "SEK_31",
+                                                "reportsToCode":  "HEAD_BAG_15",
+                                                "name":  "Kepala Seksi Satuan Pengawasan Internal 3",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_32",
+                                                "unitCode":  "SEK_32",
+                                                "reportsToCode":  "HEAD_BAG_16",
+                                                "name":  "Kepala Seksi Manajemen Risiko Transaksional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_33",
+                                                "unitCode":  "SEK_33",
+                                                "reportsToCode":  "HEAD_BAG_16",
+                                                "name":  "Kepala Seksi Manajemen Risiko Non Transaksional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_34",
+                                                "unitCode":  "SEK_34",
+                                                "reportsToCode":  "HEAD_BAG_17",
+                                                "name":  "Kepala Seksi Kepatuhan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_35",
+                                                "unitCode":  "SEK_35",
+                                                "reportsToCode":  "HEAD_BAG_17",
+                                                "name":  "Kepala Seksi Hukum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_36",
+                                                "unitCode":  "SEK_36",
+                                                "reportsToCode":  "HEAD_BAG_18",
+                                                "name":  "Kepala Seksi UKPN, UPK \u0026 APU PPT",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_37",
+                                                "unitCode":  "SEK_37",
+                                                "reportsToCode":  "HEAD_BAG_18",
+                                                "name":  "Kepala Unit Kerja Data Nasabah",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_38",
+                                                "unitCode":  "SEK_38",
+                                                "reportsToCode":  "HEAD_BAG_19",
+                                                "name":  "Kepala Seksi Pemasaran Wilayah Sumatera \u0026 Sulawesi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_39",
+                                                "unitCode":  "SEK_39",
+                                                "reportsToCode":  "HEAD_BAG_19",
+                                                "name":  "Kepala Seksi Pemasaran Wilayah Non Sumatera \u0026 Sulawesi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_40",
+                                                "unitCode":  "SEK_40",
+                                                "reportsToCode":  "HEAD_BAG_20",
+                                                "name":  "Kepala Seksi Pemasaran Non Broker BUS",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_41",
+                                                "unitCode":  "SEK_41",
+                                                "reportsToCode":  "HEAD_BAG_20",
+                                                "name":  "Kepala Seksi Pemasaran Broker BUS",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_42",
+                                                "unitCode":  "SEK_42",
+                                                "reportsToCode":  "HEAD_BAG_20",
+                                                "name":  "Kepala Seksi Pemasaran Travel",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_43",
+                                                "unitCode":  "SEK_43",
+                                                "reportsToCode":  "HEAD_BAG_21",
+                                                "name":  "Kepala Seksi Pemasaran Broker",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_44",
+                                                "unitCode":  "SEK_44",
+                                                "reportsToCode":  "HEAD_BAG_21",
+                                                "name":  "Kepala Seksi Pemasaran Agent \u0026 Direct",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_45",
+                                                "unitCode":  "SEK_45",
+                                                "reportsToCode":  "HEAD_BAG_22",
+                                                "name":  "Kepala Seksi Pemasaran Administrasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_46",
+                                                "unitCode":  "SEK_46",
+                                                "reportsToCode":  "HEAD_BAG_22",
+                                                "name":  "Kepala Seksi Pemasaran Pengembangan \u0026 Monitoring Produk",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_47",
+                                                "unitCode":  "SEK_47",
+                                                "reportsToCode":  "HEAD_BAG_23",
+                                                "name":  "Kepala Seksi Pengembangan Teknologi Informasi Pendukung Bisnis",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_48",
+                                                "unitCode":  "SEK_48",
+                                                "reportsToCode":  "HEAD_BAG_23",
+                                                "name":  "Kepala Seksi Pengembangan Teknologi Informasi Pendukung Operasional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_49",
+                                                "unitCode":  "SEK_49",
+                                                "reportsToCode":  "HEAD_BAG_24",
+                                                "name":  "Kepala Seksi Perencanaan \u0026 Tata Kelola Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_50",
+                                                "unitCode":  "SEK_50",
+                                                "reportsToCode":  "HEAD_BAG_24",
+                                                "name":  "Kepala Seksi Operasional Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "HEAD_SEK_51",
+                                                "unitCode":  "SEK_51",
+                                                "reportsToCode":  "HEAD_BAG_24",
+                                                "name":  "Kepala Seksi Database \u0026 Administrasi Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  true,
+                                                "maxIncumbents":  1,
+                                                "levelCode":  "KASI"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_01",
+                                                "unitCode":  "SEK_01",
+                                                "reportsToCode":  "HEAD_SEK_01",
+                                                "name":  "Pelaksana Keuangan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_02",
+                                                "unitCode":  "SEK_02",
+                                                "reportsToCode":  "HEAD_SEK_02",
+                                                "name":  "Pelaksana Investasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_03",
+                                                "unitCode":  "SEK_03",
+                                                "reportsToCode":  "HEAD_SEK_03",
+                                                "name":  "Pelaksana Inkaso",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_04",
+                                                "unitCode":  "SEK_04",
+                                                "reportsToCode":  "HEAD_SEK_04",
+                                                "name":  "Pelaksana Akuntansi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_05",
+                                                "unitCode":  "SEK_05",
+                                                "reportsToCode":  "HEAD_SEK_05",
+                                                "name":  "Pelaksana Pajak",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_06",
+                                                "unitCode":  "SEK_06",
+                                                "reportsToCode":  "HEAD_SEK_06",
+                                                "name":  "Pelaksana Aktuaria",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_07",
+                                                "unitCode":  "SEK_07",
+                                                "reportsToCode":  "HEAD_SEK_07",
+                                                "name":  "Pelaksana Statistik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_08",
+                                                "unitCode":  "SEK_08",
+                                                "reportsToCode":  "HEAD_SEK_08",
+                                                "name":  "Pelaksana Akseptasi Asuransi Pembiayaan Konsumtif CBC",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_09",
+                                                "unitCode":  "SEK_09",
+                                                "reportsToCode":  "HEAD_SEK_09",
+                                                "name":  "Pelaksana Akseptasi Asuransi Pembiayaan Konsumtif Non CBC",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_10",
+                                                "unitCode":  "SEK_10",
+                                                "reportsToCode":  "HEAD_SEK_10",
+                                                "name":  "Pelaksana Akseptasi Asuransi Pembiayaan Produktif \u0026 Suretyship",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_11",
+                                                "unitCode":  "SEK_11",
+                                                "reportsToCode":  "HEAD_SEK_11",
+                                                "name":  "Pelaksana Adm. Teknik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_12",
+                                                "unitCode":  "SEK_12",
+                                                "reportsToCode":  "HEAD_SEK_12",
+                                                "name":  "Pelaksana Akseptasi Asuransi Marine",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_13",
+                                                "unitCode":  "SEK_13",
+                                                "reportsToCode":  "HEAD_SEK_13",
+                                                "name":  "Pelaksana Akseptasi Asuransi Non Marine",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_14",
+                                                "unitCode":  "SEK_14",
+                                                "reportsToCode":  "HEAD_SEK_14",
+                                                "name":  "Pelaksana Reasuransi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_15",
+                                                "unitCode":  "SEK_15",
+                                                "reportsToCode":  "HEAD_SEK_15",
+                                                "name":  "Pelaksana Klaim Wilayah Jawa",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_16",
+                                                "unitCode":  "SEK_16",
+                                                "reportsToCode":  "HEAD_SEK_16",
+                                                "name":  "Pelaksana Klaim Wilayah Sumatera",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_17",
+                                                "unitCode":  "SEK_17",
+                                                "reportsToCode":  "HEAD_SEK_17",
+                                                "name":  "Pelaksana Klaim Wilayah Non Jawa \u0026 Sumatera",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_18",
+                                                "unitCode":  "SEK_18",
+                                                "reportsToCode":  "HEAD_SEK_18",
+                                                "name":  "Pelaksana Klaim Asuransi GA \u0026 Health",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_19",
+                                                "unitCode":  "SEK_19",
+                                                "reportsToCode":  "HEAD_SEK_19",
+                                                "name":  "Pelaksana Klaim Asuransi Non GA \u0026 Health",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_20",
+                                                "unitCode":  "SEK_20",
+                                                "reportsToCode":  "HEAD_SEK_20",
+                                                "name":  "Pelaksana Subrogasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_21",
+                                                "unitCode":  "SEK_21",
+                                                "reportsToCode":  "HEAD_SEK_21",
+                                                "name":  "Pelaksana Adm. Kepegawaian",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_22",
+                                                "unitCode":  "SEK_22",
+                                                "reportsToCode":  "HEAD_SEK_22",
+                                                "name":  "Pelaksana Pelatihan \u0026 Pengembangan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_23",
+                                                "unitCode":  "SEK_23",
+                                                "reportsToCode":  "HEAD_SEK_23",
+                                                "name":  "Pelaksana Logistik",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_24",
+                                                "unitCode":  "SEK_24",
+                                                "reportsToCode":  "HEAD_SEK_24",
+                                                "name":  "Pelaksana Arsip \u0026 Pengelolaan Aset",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_25",
+                                                "unitCode":  "SEK_25",
+                                                "reportsToCode":  "HEAD_SEK_25",
+                                                "name":  "Pelaksana Sekretariat",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_26",
+                                                "unitCode":  "SEK_26",
+                                                "reportsToCode":  "HEAD_SEK_26",
+                                                "name":  "Pelaksana Humas \u0026 Protokol",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_27",
+                                                "unitCode":  "SEK_27",
+                                                "reportsToCode":  "HEAD_SEK_27",
+                                                "name":  "Pelaksana Perencanaan Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_28",
+                                                "unitCode":  "SEK_28",
+                                                "reportsToCode":  "HEAD_SEK_28",
+                                                "name":  "Pelaksana Strategi Korporasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_29",
+                                                "unitCode":  "SEK_29",
+                                                "reportsToCode":  "HEAD_SEK_29",
+                                                "name":  "Pelaksana Satuan Pengawasan Internal 1",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_30",
+                                                "unitCode":  "SEK_30",
+                                                "reportsToCode":  "HEAD_SEK_30",
+                                                "name":  "Pelaksana Satuan Pengawasan Internal 2",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_31",
+                                                "unitCode":  "SEK_31",
+                                                "reportsToCode":  "HEAD_SEK_31",
+                                                "name":  "Pelaksana Satuan Pengawasan Internal 3",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_32",
+                                                "unitCode":  "SEK_32",
+                                                "reportsToCode":  "HEAD_SEK_32",
+                                                "name":  "Pelaksana Manajemen Risiko Transaksional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_33",
+                                                "unitCode":  "SEK_33",
+                                                "reportsToCode":  "HEAD_SEK_33",
+                                                "name":  "Pelaksana Manajemen Risiko Non Transaksional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_34",
+                                                "unitCode":  "SEK_34",
+                                                "reportsToCode":  "HEAD_SEK_34",
+                                                "name":  "Pelaksana Kepatuhan",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_35",
+                                                "unitCode":  "SEK_35",
+                                                "reportsToCode":  "HEAD_SEK_35",
+                                                "name":  "Pelaksana Hukum",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_36",
+                                                "unitCode":  "SEK_36",
+                                                "reportsToCode":  "HEAD_SEK_36",
+                                                "name":  "Pelaksana UKPN, UPK \u0026 APU PPT",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_37",
+                                                "unitCode":  "SEK_37",
+                                                "reportsToCode":  "HEAD_SEK_37",
+                                                "name":  "Pelaksana Unit Kerja Data Nasabah",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_38",
+                                                "unitCode":  "SEK_38",
+                                                "reportsToCode":  "HEAD_SEK_38",
+                                                "name":  "Pelaksana Pemasaran Wilayah Sumatera \u0026 Sulawesi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_39",
+                                                "unitCode":  "SEK_39",
+                                                "reportsToCode":  "HEAD_SEK_39",
+                                                "name":  "Pelaksana Pemasaran Wilayah Non Sumatera \u0026 Sulawesi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_40",
+                                                "unitCode":  "SEK_40",
+                                                "reportsToCode":  "HEAD_SEK_40",
+                                                "name":  "Pelaksana Pemasaran Non Broker BUS",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_41",
+                                                "unitCode":  "SEK_41",
+                                                "reportsToCode":  "HEAD_SEK_41",
+                                                "name":  "Pelaksana Pemasaran Broker BUS",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_42",
+                                                "unitCode":  "SEK_42",
+                                                "reportsToCode":  "HEAD_SEK_42",
+                                                "name":  "Pelaksana Pemasaran Travel",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_43",
+                                                "unitCode":  "SEK_43",
+                                                "reportsToCode":  "HEAD_SEK_43",
+                                                "name":  "Pelaksana Pemasaran Broker",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_44",
+                                                "unitCode":  "SEK_44",
+                                                "reportsToCode":  "HEAD_SEK_44",
+                                                "name":  "Pelaksana Pemasaran Agent \u0026 Direct",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_45",
+                                                "unitCode":  "SEK_45",
+                                                "reportsToCode":  "HEAD_SEK_45",
+                                                "name":  "Pelaksana Pemasaran Administrasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_46",
+                                                "unitCode":  "SEK_46",
+                                                "reportsToCode":  "HEAD_SEK_46",
+                                                "name":  "Pelaksana Pemasaran Pengembangan \u0026 Monitoring Produk",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_47",
+                                                "unitCode":  "SEK_47",
+                                                "reportsToCode":  "HEAD_SEK_47",
+                                                "name":  "Pelaksana Pengembangan Teknologi Informasi Pendukung Bisnis",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_48",
+                                                "unitCode":  "SEK_48",
+                                                "reportsToCode":  "HEAD_SEK_48",
+                                                "name":  "Pelaksana Pengembangan Teknologi Informasi Pendukung Operasional",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_49",
+                                                "unitCode":  "SEK_49",
+                                                "reportsToCode":  "HEAD_SEK_49",
+                                                "name":  "Pelaksana Perencanaan \u0026 Tata Kelola Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_50",
+                                                "unitCode":  "SEK_50",
+                                                "reportsToCode":  "HEAD_SEK_50",
+                                                "name":  "Pelaksana Operasional Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            },
+                                            {
+                                                "code":  "STAFF_SEK_51",
+                                                "unitCode":  "SEK_51",
+                                                "reportsToCode":  "HEAD_SEK_51",
+                                                "name":  "Pelaksana Database \u0026 Administrasi Teknologi Informasi",
+                                                "track":  "LINE",
+                                                "isUnitHead":  false,
+                                                "maxIncumbents":  null,
+                                                "levelCode":  "PELAKSANA"
+                                            }
+                                        ]
+                      }
+                  ]
+}

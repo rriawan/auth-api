@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AuthApi.Application.Features.Organization;
 
 /// <summary>Administrator read side of the organization master. Authorization is re-checked in the database on every call.</summary>
-public sealed class OrganizationQueryService(IAppDbContext db, EmployeeMutationSupport support) : IOrganizationQueryService
+public sealed partial class OrganizationQueryService(IAppDbContext db, EmployeeMutationSupport support) : IOrganizationQueryService
 {
     public const int MaxPageSize = 100;
     public const int MaxPage = 1_000_000;
