@@ -174,6 +174,7 @@ export interface PositionSummaryDto {
   reportsToPositionId: string | null;
   isActive: boolean | null;
   version: string;
+  levelId: string | null;
 }
 
 export interface StructurePositionNode {
@@ -244,4 +245,11 @@ export interface SelfOrganizationProfileDto {
   } | null;
   primaryAssignmentId: string | null;
   assignments: SelfAssignmentDto[];
+}
+
+export interface OrganizationMutationResultDto {
+  id: string;
+  /** ETag kuat agregat setelah perubahan. */
+  version: string;
+  versionRecordId: string;
 }

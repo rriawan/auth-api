@@ -3,6 +3,7 @@ import "server-only";
 import { apiFetch } from "./client";
 import type {
   ClassificationDto,
+  OrganizationMutationResultDto,
   OfficeDetailDto,
   OfficePageDto,
   OfficeStructureDto,
@@ -21,7 +22,25 @@ export interface OfficesQuery {
   pageSize?: number;
 }
 
+function write(method: "POST", path: string, body: unknown, version?: string) {
+  return apiFetch<OrganizationMutationResultDto>(`${base}${path}`, {
+    method,
+    body,
+    headers: version ? { "If-Match": version } : undefined,
+  });
+}
+
 export const organizationApi = {
+  createOffice: (body: unknown) => write("POST", "/offices", body),
+  addOfficeVersion: (id: string, body: unknown, version: string) =>
+    write("POST", `/offices/${enc(id)}/versions`, body, version),
+  createUnit: (body: unknown) => write("POST", "/units", body),
+  addUnitVersion: (id: string, body: unknown, version: string) =>
+    write("POST", `/units/${enc(id)}/versions`, body, version),
+  createPosition: (body: unknown) => write("POST", "/positions", body),
+  addPositionVersion: (id: string, body: unknown, version: string) =>
+    write("POST", `/positions/${enc(id)}/versions`, body, version),
+
   classifications: (): Promise<ClassificationDto[]> =>
     apiFetch<ClassificationDto[]>(`${base}/classifications`),
 

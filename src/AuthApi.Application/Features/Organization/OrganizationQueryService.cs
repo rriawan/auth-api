@@ -114,7 +114,7 @@ public sealed class OrganizationQueryService(IAppDbContext db, EmployeeMutationS
         {
             var v = versions.SingleOrDefault(x => x.PositionId == p.Id);
             return new PositionSummaryDto(p.Id, p.OrgUnitId, p.PositionCode, v?.Name, v?.Track, v?.IsUnitHead, v?.MaxIncumbents,
-                v?.ReportsToPositionId, v?.IsActive, EmployeeMutationSupport.ETag(p.RowVersion));
+                v?.ReportsToPositionId, v?.IsActive, EmployeeMutationSupport.ETag(p.RowVersion), v?.LevelId);
         }).ToList();
     }
 

@@ -1,11 +1,17 @@
 import { z } from "zod";
 
+const isRealDate = (value: string) => {
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+};
+
 const dateRule = (label: string) =>
   z
     .string({ required_error: `${label} wajib diisi` })
     .regex(/^\d{4}-\d{2}-\d{2}$/, {
       message: `${label} harus berformat tanggal (YYYY-MM-DD)`,
-    });
+    })
+    .refine(isRealDate, { message: `${label} bukan tanggal yang valid` });
 
 const optionalDateRule = (label: string) =>
   z
