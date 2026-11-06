@@ -74,7 +74,8 @@ public sealed record UnlinkEmployeeRequest([Required, MaxLength(500)] string Rea
 public sealed class EmployeesAdminController(
     IEmployeeProfileService profiles,
     IEmployeePlacementService placements,
-    IEmployeeQueryService queries) : ControllerBase
+    IEmployeeQueryService queries,
+    IEmployeeLifecycleService lifecycle) : ControllerBase
 {
     // ---- reads --------------------------------------------------------------------------------------------
 
@@ -171,6 +172,19 @@ public sealed class EmployeesAdminController(
         return Mutated(await placements.EndActingAsync(id,
             new EndActingAssignmentCommand(actingId, request.EffectiveToExclusive, request.Reason),
             IfMatch(), Actor(), cancellationToken), StatusCodes.Status201Created);
+    }
+
+    /// <summary>
+    /// Operator command (run by a person or an external scheduler with an admin token): deactivates accounts of employees whose
+    /// resignation has taken effect and revokes their refresh tokens. dryRun defaults to true so nothing changes unless asked.
+    /// </summary>
+    [HttpPost("employees/lifecycle/process-resignations")]
+    [ProducesResponseType(typeof(LifecycleRunResult), StatusCodes.Status200OK)]
+    public async Task<ActionResult<LifecycleRunResult>> ProcessResignations([FromQuery] bool dryRun = true,
+        CancellationToken cancellationToken = default)
+    {
+        NoStore();
+        return Ok(await lifecycle.ProcessResignationsAsync(dryRun, Actor(), cancellationToken));
     }
 
     // ---- account link -------------------------------------------------------------------------------------

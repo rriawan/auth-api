@@ -2,6 +2,7 @@ using AuthApi.Application.Common.Exceptions;
 using AuthApi.Application.Common.Interfaces;
 using AuthApi.Application.Common.Models;
 using AuthApi.Application.Features.Auth.DTOs;
+using AuthApi.Application.Features.Employees;
 using AuthApi.Domain.Entities;
 using AuthApi.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,8 @@ public sealed class AuthService(
     IAuthNotificationDispatcher notificationDispatcher,
     IClientApiKeyValidator clientApiKeyValidator,
     IOptions<JwtSettings> jwtOptions,
-    IOptions<SecuritySettings> securityOptions) : IAuthService
+    IOptions<SecuritySettings> securityOptions,
+    IEmploymentAccessGate employmentGate) : IAuthService
 {
     private readonly JwtSettings _jwtSettings = jwtOptions.Value;
     private readonly SecuritySettings _securitySettings = securityOptions.Value;
@@ -165,6 +167,26 @@ public sealed class AuthService(
                 cancellationToken: cancellationToken);
 
             throw new ForbiddenAccessException("Akun pengguna belum diaktivasi/diverifikasi.");
+        }
+
+        // 5b. Pegawai yang terhubung harus masih aktif (D-02); dicek setelah password benar agar tidak membuka enumerasi akun.
+        if (employmentGate is not null)
+        {
+            var employment = await employmentGate.EvaluateAsync(user.Id, cancellationToken);
+            if (!employment.IsAllowed)
+            {
+                await auditLogService.LogAsync(
+                    AuditEventType.LoginFailed,
+                    isSuccess: false,
+                    userId: user.Id,
+                    clientAppId: clientApp.Id,
+                    ipAddress: ipAddress,
+                    userAgent: userAgent,
+                    detail: new { reason = "Linked employee is not active" },
+                    cancellationToken: cancellationToken);
+
+                throw new ForbiddenAccessException("Akun tidak dapat digunakan. Hubungi administrator.");
+            }
         }
 
         // 6. Muat Roles & Permissions milik User khusus untuk ClientApp tujuan
@@ -351,6 +373,36 @@ public sealed class AuthService(
             throw new ForbiddenAccessException("Akun pengguna sedang tidak aktif atau terkunci.");
         }
 
+        if (employmentGate is not null)
+        {
+            var employment = await employmentGate.EvaluateAsync(user.Id, cancellationToken);
+            if (!employment.IsAllowed)
+            {
+                // A refresh after the resignation took effect ends every session of the account, even if the lifecycle job is late.
+                var activeSessions = await dbContext.RefreshTokens
+                    .Where(x => x.UserId == user.Id && x.RevokedAtUtc == null && x.ExpiresAtUtc > nowUtc)
+                    .ToListAsync(cancellationToken);
+                foreach (var session in activeSessions)
+                {
+                    session.RevokedAtUtc = nowUtc;
+                    session.RevokeReason = "Linked employee is not active";
+                }
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+                await auditLogService.LogAsync(
+                    AuditEventType.TokenRefreshed,
+                    isSuccess: false,
+                    userId: user.Id,
+                    clientAppId: clientApp.Id,
+                    ipAddress: ipAddress,
+                    userAgent: userAgent,
+                    detail: new { reason = "Linked employee is not active", revokedSessions = activeSessions.Count },
+                    cancellationToken: cancellationToken);
+
+                throw new ForbiddenAccessException("Akun tidak dapat digunakan. Hubungi administrator.");
+            }
+        }
+
         var (roles, permissions) = await LoadUserAppAccessAsync(user.Id, clientApp.Id, cancellationToken);
         if (roles.Count == 0)
         {
@@ -516,6 +568,11 @@ public sealed class AuthService(
         if (!user.IsActive)
         {
             throw new ForbiddenAccessException("Akun pengguna sedang tidak aktif.");
+        }
+
+        if (employmentGate is not null && !(await employmentGate.EvaluateAsync(user.Id, cancellationToken)).IsAllowed)
+        {
+            throw new ForbiddenAccessException("Akun tidak dapat digunakan. Hubungi administrator.");
         }
 
         var clientApp = await dbContext.ClientApps
@@ -917,7 +974,10 @@ public sealed class AuthService(
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == tokenResult.UserId.Value, cancellationToken);
 
-        if (user is null || !user.IsActive || !user.IsAccountVerified || user.IsLockedOut(nowUtc))
+        var employmentBlocked = user is not null && user.IsActive && user.IsAccountVerified && !user.IsLockedOut(nowUtc)
+            && employmentGate is not null && !(await employmentGate.EvaluateAsync(user.Id, cancellationToken)).IsAllowed;
+
+        if (user is null || !user.IsActive || !user.IsAccountVerified || user.IsLockedOut(nowUtc) || employmentBlocked)
         {
             var reason = user is null
                 ? "Akun pengguna tidak ditemukan."
@@ -925,7 +985,11 @@ public sealed class AuthService(
                     ? "Akun pengguna telah dinonaktifkan."
                     : !user.IsAccountVerified
                         ? "Akun pengguna belum terverifikasi."
-                        : "Akun pengguna sedang terkunci (locked out).";
+                        : employmentBlocked
+                            ? EmploymentAccessGate.BlockedReason
+                            : "Akun pengguna sedang terkunci (locked out).";
+            // Employment details stay in the audit log; consumer applications only learn that the account is inactive.
+            var publicReason = employmentBlocked ? "Akun pengguna tidak aktif." : reason;
 
             await auditLogService.LogAsync(
                 AuditEventType.TokenVerified,
@@ -948,7 +1012,7 @@ public sealed class AuthService(
                 ExpiresAtUtc: tokenResult.ExpiresAtUtc,
                 Roles: [],
                 Permissions: [],
-                Reason: reason);
+                Reason: publicReason);
         }
 
         // 4. Muat Roles & Permissions realtime milik User pada ClientApp pemanggil
@@ -1049,7 +1113,8 @@ public sealed class AuthService(
             ?? throw new KeyNotFoundException("Pengguna tidak ditemukan.");
 
         var nowUtc = DateTime.UtcNow;
-        var isUserActive = user.IsActive && user.IsAccountVerified && !user.IsLockedOut(nowUtc);
+        var isUserActive = user.IsActive && user.IsAccountVerified && !user.IsLockedOut(nowUtc)
+            && (employmentGate is null || (await employmentGate.EvaluateAsync(user.Id, cancellationToken)).IsAllowed);
 
         var (roles, permissions) = isUserActive
             ? await LoadUserAppAccessAsync(user.Id, clientApp.Id, cancellationToken)

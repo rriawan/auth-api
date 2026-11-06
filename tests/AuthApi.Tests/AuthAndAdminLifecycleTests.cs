@@ -63,7 +63,8 @@ public class AuthAndAdminLifecycleTests : IDisposable
             _notificationDispatcher,
             clientApiKeyValidator,
             jwtOptions,
-            securityOptions);
+            securityOptions,
+            new AuthApi.Application.Features.Employees.EmploymentAccessGate(_dbContext, TimeProvider.System, securityOptions));
     }
 
     [Fact]
