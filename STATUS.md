@@ -1,13 +1,25 @@
 # STATUS.md — Catatan Progres & Memori Kerja `auth-api`
 
 > **Instruksi untuk Model AI:**  
-> Baca file ini bersama `AGENTS.md`, `PLANNING.md`, `PLANNING_FRONTEND.md`, `BACKEND_DOC.md`, dan `FRONTEND_DOC.md` setiap kali memulai sesi baru. Perbarui file ini setiap kali menyelesaikan sebuah fase atau langkah penting agar sesi berikutnya dapat langsung melanjutkan tanpa kehilangan konteks.
+> Ikuti `AGENTS.md` §§1, 8, dan 9 untuk konteks awal dan pembaruan. Hanya Agen Utama yang memperbarui file ini.
 
-**Terakhir Diperbarui:** 2026-11-04
+**Terakhir Diperbarui:** 2026-11-06
 
 ---
 
 ## 1. Sedang Dikerjakan
+
+- **Planning Organization & Employee Profile (2026-11-06, keputusan final):** Pengguna menyepakati authorization terpusat existing tetap dipertahankan. Dokumen baru [`docs/PLANNING_ORGANIZATION_EMPLOYEE_PROFILE.md`](./docs/PLANNING_ORGANIZATION_EMPLOYEE_PROFILE.md) selesai disusun dan direview independen. Profil organisasi merupakan referensi; tidak otomatis mengubah role/permission, scope data atau approver. Belum mengubah source code, membuat migration, menjalankan aplikasi, atau mengakses database. Angka build/test existing di bawah merupakan catatan verifikasi sebelumnya, bukan hasil eksekusi sesi planning.
+  - [x] Analisis existing dan aturan bisnis, rancangan data/API/portal, master 28 kantor, tahapan dan acceptance criteria.
+  - [x] Review independen keamanan/konsistensi; koreksi unlink menjelang resign, semantik asOf link current, serta snapshot profil/ETag.
+  - [ ] P0 — Konfirmasi keputusan D-01 s.d. D-08 dan kontrak.
+  - [ ] P1 — Persistence dan master.
+  - [ ] P2 — Profil dan penempatan.
+  - [ ] P3 — API dan keamanan.
+  - [ ] P4 — Siklus hidup akun.
+  - [ ] P5 — Portal.
+  - [ ] P6 — Pilot konsumen.
+  - [ ] P7 — Hardening dan dokumentasi.
 
 - **Backend (`PLANNING.md` & `BACKEND_DOC.md`):** Seluruh tahapan pengembangan **Fase 1 s/d Fase 8** telah **selesai 100%** dan telah di-merge ke branch `main`.
   - **Status Build:** Lulus bersih (`dotnet build AuthApi.sln` -> `0 Warning(s)`, `0 Error(s)`).
@@ -52,6 +64,9 @@
 
 ## 2. Keputusan Penting
 
+- **Kesepakatan final pengguna (menggantikan arah sebelumnya):** Pertahankan AuthN dan RBAC terpusat existing, termasuk syarat role aplikasi pada login/refresh/verify, JWT role/permission, serta pengelolaan akses portal. Tidak membuat UserClientApps pengganti. Tambahkan profil pegawai/organisasi opsional; mutasi/promosi/acting tidak mengubah role otomatis. Scope transaksi dan approval tetap milik konsumen. Blueprint baru melengkapi, bukan mengganti, PLANNING.md/PLANNING_FRONTEND.md.
+- **Rekomendasi blueprint yang masih menunggu gate bisnis:** Link current opsional 1:1; asOf profil user merekonstruksi organisasi pegawai yang tertaut saat ini, bukan histori identitas akun. Profil terpisah dari JWT/session. Usulan unlink/relink ditolak bila ada status pembatas confirmed sekarang/masa depan; transaksi baca konsisten untuk profil dan ETag. Detail keputusan blocking tercatat D-01 s.d. D-08 pada dokumen baru.
+
 1. **Target Framework & SDK Backend:** Seluruh 5 project (`Domain`, `Application`, `Infrastructure`, `WebApi`, dan `Tests`) menggunakan `.NET 10 LTS` (`net10.0`) dengan SDK `10.0.403` yang dikunci melalui `global.json` (`rollForward: latestFeature`).
 2. **Isolasi Pengujian dari Database MSSQL (`AGENTS.md` Bagian 7):** Project `AuthApi.Tests` menggunakan `Microsoft.EntityFrameworkCore.InMemory` dengan nama database unik per test instance sehingga eksekusi `dotnet test` tidak pernah menyentuh server MSSQL.
 3. **Arsitektur Frontend (`PLANNING_FRONTEND.md`):**
@@ -81,10 +96,15 @@
 
 ## 3. Masalah yang Diketahui
 
-1. **Tidak Ada Blocker:** Seluruh fitur telah terimplementasi dan terverifikasi dengan baik.
+1. **Ekstensi belum diimplementasikan:** Model pegawai/organisasi, API, guard baru, lifecycle, dan portal masih berupa planning. Authorization existing sengaja tetap dipertahankan. Scope kantor/unit pada grant dan role otomatis dari organisasi bukan target pengembangan.
+2. **Batas revokasi existing:** Verifikasi realtime membaca akses terbaru, tetapi filter admin memakai klaim JWT. Belum ada access version pada JWT dan pengecekan versinya. Pencabutan refresh token tidak otomatis membatalkan JWT yang masih valid pada konsumen dengan validasi lokal saja.
+3. **Keputusan bisnis terbuka:** D-01 s.d. D-08 mengatur sumber master, relasi akun–pegawai/nama, status/resign, tanggal efektif, kapasitas/rangkap/acting, struktur pusat, akses data, SLA/scheduler dan retensi. BRD tetap DRAFT. Struktur pusat/induk kantor tidak boleh dikarang; approval/fallback tetap tanggung jawab konsumen.
+4. **Ketidaksesuaian catatan SDK:** `global.json` saat inspeksi berisi `10.0.100` dengan `latestFeature`, sedangkan catatan keputusan sebelumnya menyebut `10.0.403`. SDK yang benar-benar terpasang tidak diverifikasi pada sesi analisis.
 
 ---
 
 ## 4. Langkah Berikutnya
 
-1. Lakukan commit Git untuk menyimpan `BACKEND_DOC.md`, `FRONTEND_DOC.md`, dan pembaruan `auth.ts`.
+1. Review dokumen planning baru bersama pemilik proyek dan konfirmasi D-01 s.d. D-08 sesuai gate fase; jangan menganggap rekomendasi sebagai SOP yang telah disahkan.
+2. Setelah instruksi implementasi diberikan, kerjakan P0 lalu fase ekstensi berikutnya satu per satu. Pertahankan seluruh AuthN/RBAC existing. Operasi database/migration apply/provisioning hanya oleh pengguna; verifikasi SQL Server juga dijalankan pengguna. Rencana policy engine organisasi dan pemindahan RBAC ke setiap konsumen tidak dilanjutkan.
+3. Pengguna telah meminta publikasi dokumen planning dan status terkait ke GitHub pada 6 November 2026. Implementasi source code dan migration belum diminta. Operasi database tetap dilakukan manual oleh pengguna sesuai `AGENTS.md` §7.
