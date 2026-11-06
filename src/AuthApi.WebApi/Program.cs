@@ -116,6 +116,21 @@ builder.Services.AddRateLimiter(options =>
         await context.HttpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
     };
 
+    options.AddPolicy(RateLimitPolicies.AdminEmployees, httpContext =>
+    {
+        // The limiter runs before authentication, so partition by remote IP (same as PublicAuth).
+        var key = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown-ip";
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: key,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 120,
+                Window = TimeSpan.FromSeconds(60),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            });
+    });
+
     options.AddPolicy(RateLimitPolicies.PublicAuth, httpContext =>
     {
         var ipKey = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown-ip";

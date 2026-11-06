@@ -30,6 +30,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+        services.AddScoped<IEmployeeMutationRunner, SqlServerEmployeeMutationRunner>();
         services.AddScoped<DatabaseSeeder>();
 
         // Security, Cryptography, JWT RS256 & Audit Log Services (Fase 3)
