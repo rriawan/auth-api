@@ -1,6 +1,10 @@
 import { auth } from "@/auth";
 import ChangePasswordForm from "@/components/profile/change-password-form";
 import ProfileOverview from "@/components/profile/profile-overview";
+import { ProfileOrganization } from "@/components/profile/profile-organization";
+import { selfOrganizationApi } from "@/lib/api/self-organization";
+import type { SelfOrganizationProfileDto } from "@/lib/api/employee-types";
+import { getErrorMessage } from "@/lib/api/errors";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +16,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { authApi } from "@/lib/api/auth";
 import { UserProfileSummaryDto } from "@/lib/api/types";
-import { KeyRound, User } from "lucide-react";
+import { Building2, KeyRound, User } from "lucide-react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -43,6 +47,15 @@ export default async function ProfilePage() {
       roles: session.user.roles || [],
       permissions: session.user.permissions || [],
     };
+  }
+
+  // Ringkasan organisasi sendiri bersifat tambahan: kegagalan memuatnya tidak boleh merusak halaman profil.
+  let organization: SelfOrganizationProfileDto | null = null;
+  let organizationError: string | null = null;
+  try {
+    organization = await selfOrganizationApi.get();
+  } catch (err) {
+    organizationError = getErrorMessage(err);
   }
 
   return (
@@ -91,6 +104,13 @@ export default async function ProfilePage() {
             <KeyRound className="w-4 h-4" />
             Ganti Password
           </TabsTrigger>
+          <TabsTrigger
+            value="organization"
+            className="flex items-center gap-2 rounded-lg py-2 px-4 text-xs font-medium cursor-pointer"
+          >
+            <Building2 className="w-4 h-4" />
+            Organisasi
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -99,6 +119,10 @@ export default async function ProfilePage() {
 
         <TabsContent value="password" className="space-y-6">
           <ChangePasswordForm />
+        </TabsContent>
+
+        <TabsContent value="organization" className="space-y-6">
+          <ProfileOrganization profile={organization} error={organizationError} />
         </TabsContent>
       </Tabs>
     </div>

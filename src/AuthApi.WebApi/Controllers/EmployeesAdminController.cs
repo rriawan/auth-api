@@ -61,6 +61,9 @@ public sealed record LinkEmployeeRequest(
     [Required] Guid EmployeeId,
     [Required, MaxLength(500)] string Reason);
 
+/// <summary>Employee currently linked to an account (null when the account is not linked; this is not an error).</summary>
+public sealed record UserOrganizationDto(Guid UserId, EmployeeDetail? Employee);
+
 public sealed record UnlinkEmployeeRequest([Required, MaxLength(500)] string Reason);
 
 /// <summary>
@@ -104,6 +107,16 @@ public sealed class EmployeesAdminController(
     {
         NoStore();
         return Ok(await queries.GetHistoryAsync(id, Actor(), cancellationToken));
+    }
+
+    [HttpGet("users/{userId:guid}/organization")]
+    [ProducesResponseType(typeof(UserOrganizationDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<UserOrganizationDto>> GetUserOrganization(Guid userId, CancellationToken cancellationToken)
+    {
+        NoStore();
+        var detail = await queries.GetByUserAsync(userId, Actor(), cancellationToken);
+        if (detail is not null) Response.Headers.ETag = detail.Employee.Version;
+        return Ok(new UserOrganizationDto(userId, detail));
     }
 
     // ---- profile ------------------------------------------------------------------------------------------
