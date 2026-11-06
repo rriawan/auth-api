@@ -116,10 +116,20 @@ builder.Services.AddRateLimiter(options =>
         await context.HttpContext.Response.WriteAsJsonAsync(problem, cancellationToken);
     };
 
+    options.AddPolicy(RateLimitPolicies.SelfProfile, httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: PartitionKeyFor(httpContext),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 120,
+                Window = TimeSpan.FromSeconds(60),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
+
     options.AddPolicy(RateLimitPolicies.AdminEmployees, httpContext =>
     {
-        // The limiter runs before authentication, so partition by remote IP (same as PublicAuth).
-        var key = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown-ip";
+        var key = PartitionKeyFor(httpContext);
         return RateLimitPartition.GetFixedWindowLimiter(
             partitionKey: key,
             factory: _ => new FixedWindowRateLimiterOptions
@@ -233,8 +243,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseRateLimiter();
 app.UseAuthentication();
+app.UseRateLimiter(); // after authentication: signed-in callers are limited per subject, anonymous ones per IP
 app.UseAuthorization();
 
 app.MapHealthChecks("/health", new HealthCheckOptions
@@ -263,5 +273,10 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 app.MapControllers();
 
 app.Run();
+
+static string PartitionKeyFor(HttpContext httpContext) =>
+    httpContext.User.Identity?.IsAuthenticated == true && httpContext.User.FindFirst("sub")?.Value is { Length: > 0 } sub
+        ? "sub:" + sub
+        : "ip:" + (httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown-ip");
 
 public partial class Program;
