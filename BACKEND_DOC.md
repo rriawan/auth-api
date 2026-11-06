@@ -493,3 +493,14 @@ Jika Anda atau agen AI lain ingin menambahkan fitur baru di backend:
    - Jalankan `dotnet build AuthApi.sln`
    - Jalankan unit & integration test: `dotnet test AuthApi.sln`
 
+
+### 3.F Template struktur organisasi (publish / preview / apply)
+
+Semua endpoint: Bearer `auth-admin`, SuperAdmin dicek ulang ke database, `Cache-Control: no-store`, rate limit `AdminEmployees`.
+
+| Method | Path | Keterangan |
+|---|---|---|
+| GET | `/api/v1/admin/organization/templates?classification=` | Daftar template (state `Draft`/`Published`, jumlah unit/jabatan, `eTag`). |
+| POST | `/api/v1/admin/organization/templates/{id}/publish` | Body `{reason, decisionReference?}`, header `If-Match` wajib (428/412). Hanya Draft; isi divalidasi (kode, track, kapasitas, level, siklus). Final. |
+| GET | `/api/v1/admin/organization/offices/{id}/template-applications/preview?templateId=&effectiveFrom=` | Pratinjau + `canApply` + `blockers` (template belum Published, klasifikasi beda, kantor tidak kosong, tanggal mundur/>5 tahun, dst.). |
+| POST | `/api/v1/admin/organization/offices/{id}/template-applications` | Body `{templateId, effectiveFrom, reason, decisionReference?, idempotencyKey}`. 201 baru, 200 bila replay kunci+isi sama, 409 bila kunci sama isi beda atau ada blocker. Hanya untuk kantor tanpa unit. Audit `OrganizationTemplateApplied`. |

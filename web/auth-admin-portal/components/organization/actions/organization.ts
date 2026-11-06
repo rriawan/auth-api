@@ -4,14 +4,22 @@ import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 import type { ActionResult } from "@/components/apps/actions/apps";
-import type { OrganizationMutationResultDto } from "@/lib/api/employee-types";
+import type {
+  OrganizationMutationResultDto,
+  TemplateApplyPreviewDto,
+  TemplateApplyResultDto,
+  TemplateMutationResultDto,
+} from "@/lib/api/employee-types";
 import { ApiException, getErrorMessage } from "@/lib/api/errors";
 import { organizationApi } from "@/lib/api/organization";
 import { requirePermission } from "@/lib/auth/permissions";
 import {
+  applyTemplateSchema,
   createOfficeSchema,
   createPositionSchema,
   createUnitSchema,
+  previewTemplateSchema,
+  publishTemplateSchema,
   officeVersionSchema,
   positionVersionSchema,
   unitVersionSchema,
@@ -41,7 +49,7 @@ function friendly(error: unknown): string {
 
 const uuid = z.string().uuid();
 
-function invalid(error: z.ZodError): Mutation {
+function invalid<T = OrganizationMutationResultDto>(error: z.ZodError): ActionResult<T> {
   const fieldErrors: Record<string, string> = {};
   for (const issue of error.issues) {
     const field = issue.path[0]?.toString();
@@ -124,4 +132,50 @@ export async function addPositionVersionAction(officeId: string, positionId: str
       reportsToPositionId: blank(d.reportsToPositionId),
       decisionReference: blank(d.decisionReference),
     }, version), [`/organization/offices/${officeId}`]);
+}
+
+// ---- template struktur -------------------------------------------------------------------------------------
+
+type Guarded<T> = ActionResult<T>;
+
+async function guarded<T>(ids: string[], work: () => Promise<Guarded<T>>): Promise<Guarded<T>> {
+  try {
+    await requirePermission("organization.write");
+    if (!ids.every((id) => uuid.safeParse(id).success)) {
+      return { success: false, error: "Identitas data tidak valid. Muat ulang halaman." };
+    }
+    return await work();
+  } catch (error) {
+    unstable_rethrow(error);
+    return { success: false, error: friendly(error) };
+  }
+}
+
+export async function publishTemplateAction(templateId: string, version: string, input: unknown): Promise<Guarded<TemplateMutationResultDto>> {
+  return guarded([templateId], async () => {
+    const parsed = publishTemplateSchema.safeParse(input);
+    if (!parsed.success) return invalid<TemplateMutationResultDto>(parsed.error);
+    const data = await organizationApi.publishTemplate(
+      templateId, { reason: parsed.data.reason, decisionReference: blank(parsed.data.decisionReference) }, version);
+    revalidatePath("/organization/offices", "layout");
+    return { success: true, data };
+  });
+}
+
+export async function previewTemplateAction(officeId: string, input: unknown): Promise<Guarded<TemplateApplyPreviewDto>> {
+  return guarded([officeId], async () => {
+    const parsed = previewTemplateSchema.safeParse(input);
+    if (!parsed.success) return invalid<TemplateApplyPreviewDto>(parsed.error);
+    return { success: true, data: await organizationApi.previewTemplate(officeId, parsed.data.templateId, parsed.data.effectiveFrom) };
+  });
+}
+
+export async function applyTemplateAction(officeId: string, input: unknown): Promise<Guarded<TemplateApplyResultDto>> {
+  return guarded([officeId], async () => {
+    const parsed = applyTemplateSchema.safeParse(input);
+    if (!parsed.success) return invalid<TemplateApplyResultDto>(parsed.error);
+    const data = await organizationApi.applyTemplate(officeId, { ...parsed.data, decisionReference: blank(parsed.data.decisionReference) });
+    revalidatePath(`/organization/offices/${officeId}`);
+    return { success: true, data };
+  });
 }

@@ -166,3 +166,21 @@ export const positionVersionSchema = z.object({
   }
 });
 export type PositionVersionFormData = z.infer<typeof positionVersionSchema>;
+
+export const publishTemplateSchema = z.object({
+  reason: reasonRule,
+  decisionReference: decisionRule,
+});
+
+export const applyTemplateSchema = z.object({
+  templateId: z.string().uuid({ message: "Template tidak valid" }),
+  effectiveFrom: dateRule("Tanggal efektif"),
+  reason: reasonRule,
+  decisionReference: decisionRule,
+  idempotencyKey: z.string().uuid({ message: "Kunci idempotensi tidak valid" }),
+});
+
+export const previewTemplateSchema = z.object({
+  templateId: z.string().uuid({ message: "Template tidak valid" }),
+  effectiveFrom: dateRule("Tanggal efektif"),
+});

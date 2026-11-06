@@ -253,3 +253,63 @@ export interface OrganizationMutationResultDto {
   version: string;
   versionRecordId: string;
 }
+
+export interface TemplateSummaryDto {
+  id: string;
+  classificationCode: string;
+  version: number;
+  state: "Draft" | "Published";
+  unitCount: number;
+  positionCount: number;
+  notes: string | null;
+  publishedAtUtc: string | null;
+  eTag: string;
+}
+
+export interface TemplatePreviewPositionDto {
+  positionCode: string;
+  name: string;
+  isUnitHead: boolean;
+  maxIncumbents: number | null;
+  levelCode: string | null;
+  reportsToCode: string | null;
+}
+
+export interface TemplatePreviewUnitDto {
+  unitCode: string;
+  name: string;
+  unitType: string;
+  parentUnitCode: string | null;
+  positions: TemplatePreviewPositionDto[];
+}
+
+export interface TemplateApplyPreviewDto {
+  officeId: string;
+  officeCode: string;
+  officeName: string | null;
+  templateId: string;
+  templateClassificationCode: string;
+  templateVersion: number;
+  templateState: string;
+  effectiveFrom: string;
+  unitCount: number;
+  positionCount: number;
+  canApply: boolean;
+  blockers: string[];
+  units: TemplatePreviewUnitDto[];
+}
+
+export interface TemplateApplyResultDto {
+  applicationId: string;
+  officeId: string;
+  templateId: string;
+  effectiveFrom: string;
+  unitsCreated: number;
+  positionsCreated: number;
+  replayed: boolean;
+}
+
+export interface TemplateMutationResultDto {
+  id: string;
+  version: string;
+}

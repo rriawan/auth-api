@@ -70,6 +70,17 @@ public sealed record PositionVersionRequest(
     [Required, MaxLength(500)] string Reason,
     [MaxLength(200)] string? DecisionReference);
 
+public sealed record PublishTemplateRequest(
+    [Required, MaxLength(500)] string Reason,
+    [MaxLength(200)] string? DecisionReference);
+
+public sealed record ApplyTemplateRequest(
+    [Required] Guid? TemplateId,
+    [Required] DateOnly? EffectiveFrom,
+    [Required, MaxLength(500)] string Reason,
+    [MaxLength(200)] string? DecisionReference,
+    [Required, MaxLength(128)] string IdempotencyKey);
+
 /// <summary>
 /// Organization master administration (planning §8.2). Bearer 'auth-admin' only; administrator rights are re-checked against
 /// the database inside every service call (D-06: SuperAdmin only in the first release). Position levels and structure
@@ -184,6 +195,41 @@ public sealed class OrganizationAdminController(IOrganizationAdminService writes
     public async Task<IActionResult> AddPositionVersion(Guid id, [FromBody] PositionVersionRequest r, CancellationToken ct) =>
         Mutated(await writes.AddPositionVersionAsync(id, new PositionVersionCommand(r.Name, r.Track!.Value, r.IsUnitHead!.Value, r.MaxIncumbents,
             r.LevelId, r.ReportsToPositionId, r.IsActive!.Value, r.EffectiveFrom, r.Reason, r.DecisionReference), IfMatch(), Actor(), ct));
+
+    // ---- structure templates ------------------------------------------------------------------------------
+
+    [HttpGet("templates")]
+    public async Task<ActionResult<IReadOnlyList<TemplateSummaryDto>>> Templates([FromQuery] string? classification, CancellationToken ct)
+    {
+        NoStore();
+        return Ok(await reads.ListTemplatesAsync(classification, Actor(), ct));
+    }
+
+    [HttpPost("templates/{id:guid}/publish")]
+    public async Task<IActionResult> PublishTemplate(Guid id, [FromBody] PublishTemplateRequest r, CancellationToken ct)
+    {
+        var result = await writes.PublishTemplateAsync(id, new PublishTemplateCommand(r.Reason, r.DecisionReference), IfMatch(), Actor(), ct);
+        NoStore();
+        Response.Headers.ETag = result.Version;
+        return Ok(result);
+    }
+
+    [HttpGet("offices/{id:guid}/template-applications/preview")]
+    public async Task<ActionResult<TemplateApplyPreviewDto>> PreviewTemplate(Guid id, [FromQuery, Required] Guid? templateId,
+        [FromQuery, Required] DateOnly? effectiveFrom, CancellationToken ct)
+    {
+        NoStore();
+        return Ok(await reads.PreviewTemplateApplicationAsync(id, templateId!.Value, effectiveFrom!.Value, Actor(), ct));
+    }
+
+    [HttpPost("offices/{id:guid}/template-applications")]
+    public async Task<IActionResult> ApplyTemplate(Guid id, [FromBody] ApplyTemplateRequest r, CancellationToken ct)
+    {
+        var result = await writes.ApplyTemplateAsync(id, new ApplyTemplateCommand(r.TemplateId!.Value, r.EffectiveFrom!.Value, r.Reason,
+            r.DecisionReference, r.IdempotencyKey), Actor(), ct);
+        NoStore();
+        return StatusCode(result.Replayed ? StatusCodes.Status200OK : StatusCodes.Status201Created, result);
+    }
 
     // ---- helpers ------------------------------------------------------------------------------------------
 

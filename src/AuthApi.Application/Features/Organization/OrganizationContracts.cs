@@ -32,6 +32,8 @@ public interface IOrganizationAdminService
     Task<OrganizationMutationResult> AddUnitVersionAsync(Guid unitId, UnitVersionCommand command, string? expectedVersion, EmployeeActor actor, CancellationToken cancellationToken = default);
     Task<OrganizationMutationResult> CreatePositionAsync(CreatePositionCommand command, EmployeeActor actor, CancellationToken cancellationToken = default);
     Task<OrganizationMutationResult> AddPositionVersionAsync(Guid positionId, PositionVersionCommand command, string? expectedVersion, EmployeeActor actor, CancellationToken cancellationToken = default);
+    Task<TemplateMutationResult> PublishTemplateAsync(Guid templateId, PublishTemplateCommand command, string? expectedVersion, EmployeeActor actor, CancellationToken cancellationToken = default);
+    Task<TemplateApplyResult> ApplyTemplateAsync(Guid officeId, ApplyTemplateCommand command, EmployeeActor actor, CancellationToken cancellationToken = default);
 }
 
 // ---- read models ------------------------------------------------------------------------------------------
@@ -79,4 +81,6 @@ public interface IOrganizationQueryService
     Task<IReadOnlyList<PositionSummaryDto>> ListPositionsAsync(Guid? officeId, Guid? unitId, DateOnly? asOf, EmployeeActor actor, CancellationToken cancellationToken = default);
     Task<PositionDetailDto> GetPositionAsync(Guid id, bool includeHistory, EmployeeActor actor, CancellationToken cancellationToken = default);
     Task<OfficeStructureDto> GetStructureAsync(Guid officeId, DateOnly? asOf, EmployeeActor actor, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TemplateSummaryDto>> ListTemplatesAsync(string? classificationCode, EmployeeActor actor, CancellationToken cancellationToken = default);
+    Task<TemplateApplyPreviewDto> PreviewTemplateApplicationAsync(Guid officeId, Guid templateId, DateOnly effectiveFrom, EmployeeActor actor, CancellationToken cancellationToken = default);
 }
