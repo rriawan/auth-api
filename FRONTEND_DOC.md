@@ -42,7 +42,9 @@ web/auth-admin-portal/
 │   │   │   ├── [appId]/page.tsx # Detail aplikasi: Info, API Key, Roles, Permissions
 │   │   │   └── page.tsx         # Tabel daftar aplikasi & pendaftaran app baru
 │   │   ├── audit-logs/page.tsx  # Tabel jejak audit, filter event, dan detail log modal
-│   │   ├── profile/page.tsx     # Profil pengguna & formulir ganti password
+│   │   ├── employees/           # Master pegawai, detail, dan lifecycle akun
+│   │   ├── organization/offices/# Master kantor, struktur, unit, posisi, versi efektif
+│   │   ├── profile/page.tsx     # Profil pengguna, ganti password, ringkasan organisasi
 │   │   ├── users/               # Manajemen pengguna
 │   │   │   ├── [userId]/page.tsx# Detail user: status, unlock, penugasan role per app
 │   │   │   └── page.tsx         # Tabel daftar user & tambah user baru
@@ -64,6 +66,8 @@ web/auth-admin-portal/
 │   ├── audit-logs/              # Komponen tabel audit logs & modal JSON detail
 │   ├── auth/                    # Form login, aktivasi, reset password, & AuthIllustration
 │   ├── dashboard/               # Widget statistik dashboard & grafik aktivitas login
+│   ├── employees/               # Tabel pegawai, CommandDialog generik, aksi, detail, lifecycle
+│   ├── organization/            # Dialog master, tabel unit/posisi, pohon struktur
 │   ├── layout/                  # Header, Breadcrumb, Footer, ProfileDropdown
 │   ├── profile/                 # Form profil & ganti password
 │   ├── shared/                  # LogoSidebar, ThemeLogo, SearchBox, ModeToggle, Skeletons
@@ -139,6 +143,23 @@ Semua halaman publik menggunakan layout split-view:
 5. **Profil Akun (`/profile`):**
    - Menampilkan informasi akun yang sedang login, daftar peran sistem, dan hak akses efektif.
    - Formulir ganti password mandiri dengan validasi password saat ini dan password baru.
+
+6. **Pegawai (`/employees`, `/employees/[id]`, `/employees/lifecycle`):**
+   - **Daftar (`/employees`):** cari NIP/nama, paginasi, tambah pegawai (`employees.write`).
+   - **Detail (`/employees/[id]`):** tab *Penempatan*, *Plh./Plt.*, *Status*, dan *Riwayat revisi*. Aksi: ubah identitas, ubah status (Aktif/Resign), tambah penempatan, mutasi/promosi, akhiri penempatan, tambah dan akhiri Plh./Plt. Setiap aksi membawa ETag pegawai yang sedang tampil sebagai `If-Match`; bila basi (412) pengguna diminta memuat ulang. UI membedakan *belum ditempatkan*, *vacant*, jadwal masa depan, dan penugasan yang sudah berakhir. Penempatan yang sudah berakhir tidak dapat menjadi sumber mutasi atau dasar acting.
+   - **Lifecycle akun (`/employees/lifecycle`, `employees.lifecycle.write`):** pemeriksaan *dry-run* akun yang terdampak resign berlaku, lalu eksekusi dengan konfirmasi eksplisit (menonaktifkan akun dan mencabut sesi). Role dan akses aplikasi tidak diubah.
+   - **Tab Organisasi pada `/users/[userId]`:** tautkan atau lepas akun ke pegawai (`employees.link.write` + `users.write`); dimuat hanya untuk pemegang `employees.read`.
+   - **Tab Organisasi pada `/profile`:** ringkasan penempatan sendiri (hanya baca) dari `/auth/me/organization`.
+   - Pesan yang selalu ditampilkan: perubahan kepegawaian **tidak mengubah role atau permission** akun.
+
+7. **Master Organisasi (`/organization/offices`, `/organization/offices/[id]`):**
+   - **Daftar kantor:** filter klasifikasi, tanggal efektif (`asOf`), tambah kantor (kode tepat 3 digit; `organization.write`).
+   - **Detail kantor:** tab *Struktur* (pohon unit dan posisi per tanggal dengan penanda vacant), *Unit*, *Posisi*, dan *Versi efektif*. Tombol *Versi baru* pada kantor, unit, dan posisi menambah versi bertanggal efektif (mulai hari ini sampai 5 tahun ke depan); versi lama tetap tersimpan. Backend memeriksa seluruh struktur kantor di semua periode dan penempatan pegawai terdampak; perubahan yang tidak sah dibatalkan seluruhnya.
+   - Tab *Unit* dan *Posisi* selalu menampilkan keadaan **hari ini**, tidak mengikuti tanggal pada tab *Struktur*. Tombol *Versi baru* dinonaktifkan untuk baris yang belum berlaku.
+   - Versi baru tidak dapat ditambahkan bila sudah ada versi terjadwal di masa depan untuk data yang sama (pesan akan menjelaskannya). Menonaktifkan/mengarsipkan ditolak selama masih ada anak aktif atau pegawai yang ditempatkan.
+   - Pimpinan unit wajib berkapasitas tepat 1; kapasitas kosong berarti tidak dibatasi.
+   - Semua tindakan tulis pada master memerlukan permission `organization.write`, yang pada rilis awal hanya dimiliki SuperAdmin internal (D-06) dan tidak di-seed otomatis.
+   - Level jabatan dan template struktur belum tersedia (menunggu keputusan D-05).
 
 ---
 

@@ -1,4 +1,5 @@
-import { formatDate } from "@/components/employees/format";
+import { formatDate, todayJakarta } from "@/components/employees/format";
+import { CreateOfficeDialog } from "@/components/organization/org-dialogs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -79,6 +80,7 @@ export default async function OfficesPage({ searchParams }: OfficesPageProps) {
         </BreadcrumbList>
       </Breadcrumb>
 
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <Building2 className="w-5 h-5" />
@@ -89,6 +91,8 @@ export default async function OfficesPage({ searchParams }: OfficesPageProps) {
             Nama dan klasifikasi kantor berlaku menurut versi efektif pada tanggal yang dipilih.
           </p>
         </div>
+      </div>
+        <CreateOfficeDialog classifications={classifications} today={todayJakarta()} />
       </div>
 
       {fetchError ? (

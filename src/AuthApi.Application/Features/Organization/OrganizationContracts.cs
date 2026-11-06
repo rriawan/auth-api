@@ -56,7 +56,7 @@ public sealed record PositionVersionDto(Guid Id, string Name, [property: JsonCon
     bool IsActive, int RevisionNumber, string ChangeReason, string? DecisionReference, DateTime CreatedAtUtc, DateTime? SupersededAtUtc);
 public sealed record PositionSummaryDto(Guid Id, Guid OrgUnitId, string PositionCode, string? Name,
     [property: JsonConverter(typeof(JsonStringEnumConverter))] PositionTrack? Track, bool? IsUnitHead, int? MaxIncumbents,
-    Guid? ReportsToPositionId, bool? IsActive, string Version);
+    Guid? ReportsToPositionId, bool? IsActive, string Version, Guid? LevelId = null);
 public sealed record PositionDetailDto(Guid Id, Guid OrgUnitId, string PositionCode, string Version, IReadOnlyList<PositionVersionDto> Versions);
 
 public sealed record StructurePositionNode(Guid Id, string PositionCode, string Name,

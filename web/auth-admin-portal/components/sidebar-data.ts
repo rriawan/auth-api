@@ -5,6 +5,7 @@ import {
   Layers,
   User,
   UserRoundCog,
+  UserRoundX,
   UsersRound,
 } from "lucide-react";
 
@@ -36,6 +37,11 @@ export const data = {
       title: "Pegawai",
       url: "/employees",
       icon: UserRoundCog,
+    },
+    {
+      title: "Lifecycle Akun",
+      url: "/employees/lifecycle",
+      icon: UserRoundX,
     },
     {
       title: "Kantor",

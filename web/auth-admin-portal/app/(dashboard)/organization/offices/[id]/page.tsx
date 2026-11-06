@@ -1,4 +1,6 @@
-import { formatDate, periodLabel } from "@/components/employees/format";
+import { formatDate, isInForce, periodLabel, todayJakarta } from "@/components/employees/format";
+import { PositionsTable, UnitsTable } from "@/components/organization/master-tables";
+import { OfficeVersionDialog } from "@/components/organization/org-dialogs";
 import { StructureTree } from "@/components/organization/structure-tree";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -22,10 +24,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { OfficeDetailDto, OfficeStructureDto } from "@/lib/api/employee-types";
+import type {
+  ClassificationDto,
+  OfficeDetailDto,
+  OfficeStructureDto,
+  PositionSummaryDto,
+  UnitSummaryDto,
+} from "@/lib/api/employee-types";
 import { getErrorMessage } from "@/lib/api/errors";
 import { organizationApi } from "@/lib/api/organization";
-import { AlertCircle, ArrowLeft, History, Network } from "lucide-react";
+import { AlertCircle, ArrowLeft, GitBranch, History, ListTree, Network } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -45,11 +53,18 @@ export default async function OfficeDetailPage({ params, searchParams }: OfficeD
 
   let office: OfficeDetailDto | null = null;
   let structure: OfficeStructureDto | null = null;
+  let classifications: ClassificationDto[] = [];
+  let units: UnitSummaryDto[] = [];
+  let positions: PositionSummaryDto[] = [];
   let fetchError: string | null = null;
   try {
-    [office, structure] = await Promise.all([
+    // Tab Unit/Posisi dan formulir selalu memakai keadaan hari ini (perubahan hanya berlaku mulai hari ini).
+    [office, structure, classifications, units, positions] = await Promise.all([
       organizationApi.office(id, true),
       organizationApi.structure(id, asOf || null),
+      organizationApi.classifications(),
+      organizationApi.units(id),
+      organizationApi.positions(id),
     ]);
   } catch (err) {
     fetchError = getErrorMessage(err);
@@ -70,6 +85,10 @@ export default async function OfficeDetailPage({ params, searchParams }: OfficeD
       </div>
     );
   }
+
+  const today = todayJakarta();
+  const currentVersion =
+    office.versions.find((v) => v.supersededAtUtc === null && isInForce(v.effectiveFrom, v.effectiveToExclusive, today)) ?? null;
 
   return (
     <div className="space-y-6">
@@ -97,12 +116,25 @@ export default async function OfficeDetailPage({ params, searchParams }: OfficeD
         </Link>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{structure.officeName ?? `Kantor ${office.officeCode}`}</h1>
         <code className="text-xs font-mono bg-neutral-100 dark:bg-slate-800 px-2 py-0.5 rounded">{office.officeCode}</code>
+        <OfficeVersionDialog
+          officeId={office.id}
+          version={office.version}
+          current={currentVersion}
+          classifications={classifications}
+          today={today}
+        />
       </div>
 
       <Tabs defaultValue="structure" className="space-y-4">
         <TabsList className="bg-neutral-100 dark:bg-slate-800/80 p-1">
           <TabsTrigger value="structure" className="gap-2 text-xs">
             <Network className="w-3.5 h-3.5" /> Struktur
+          </TabsTrigger>
+          <TabsTrigger value="units" className="gap-2 text-xs">
+            <GitBranch className="w-3.5 h-3.5" /> Unit ({units.length})
+          </TabsTrigger>
+          <TabsTrigger value="positions" className="gap-2 text-xs">
+            <ListTree className="w-3.5 h-3.5" /> Posisi ({positions.length})
           </TabsTrigger>
           <TabsTrigger value="versions" className="gap-2 text-xs">
             <History className="w-3.5 h-3.5" /> Versi efektif ({office.versions.length})
@@ -121,8 +153,16 @@ export default async function OfficeDetailPage({ params, searchParams }: OfficeD
             </CardContent>
           </Card>
           <p className="text-[11px] text-muted-foreground">
-            Pengelolaan unit, posisi, dan versi efektif dilakukan melalui API admin; antarmuka penyuntingan akan ditambahkan pada tahap berikutnya.
+            Unit, posisi, dan versi efektif dikelola pada tab Unit, tab Posisi, dan tombol Versi baru di atas. Struktur ini menampilkan tanggal yang dipilih; formulir selalu berlaku mulai hari ini atau sesudahnya.
           </p>
+        </TabsContent>
+
+        <TabsContent value="units">
+          <UnitsTable officeId={office.id} units={units} positions={positions} today={today} />
+        </TabsContent>
+
+        <TabsContent value="positions">
+          <PositionsTable officeId={office.id} units={units} positions={positions} today={today} />
         </TabsContent>
 
         <TabsContent value="versions">

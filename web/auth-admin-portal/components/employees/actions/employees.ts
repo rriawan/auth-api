@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 import type { ActionResult } from "@/components/apps/actions/apps";
 import { employeesApi } from "@/lib/api/employees";
@@ -8,6 +9,7 @@ import { ApiException, getErrorMessage } from "@/lib/api/errors";
 import type {
   EmployeeMutationResultDto,
   EmployeeSummaryDto,
+  LifecycleRunResultDto,
 } from "@/lib/api/employee-types";
 import { organizationApi } from "@/lib/api/organization";
 import { requirePermission } from "@/lib/auth/permissions";
@@ -74,6 +76,7 @@ async function run<S extends z.ZodTypeAny>(
     for (const path of paths) revalidatePath(path);
     return { success: true, data };
   } catch (error) {
+    unstable_rethrow(error);
     return { success: false, error: friendly(error) };
   }
 }
@@ -151,6 +154,7 @@ export async function searchEmployeesAction(search: string): Promise<ActionResul
     const page = await employeesApi.list({ search: term, page: 1, pageSize: 10 });
     return { success: true, data: page.items };
   } catch (error) {
+    unstable_rethrow(error);
     return { success: false, error: getErrorMessage(error) };
   }
 }
@@ -165,6 +169,7 @@ export async function listOfficeOptionsAction(): Promise<ActionResult<PickerOpti
     }
     return { success: true, data: options };
   } catch (error) {
+    unstable_rethrow(error);
     return { success: false, error: getErrorMessage(error) };
   }
 }
@@ -187,6 +192,46 @@ export async function listPositionOptionsAction(officeId: string): Promise<Actio
         })),
     };
   } catch (error) {
+    unstable_rethrow(error);
+    return { success: false, error: getErrorMessage(error) };
+  }
+}
+
+// ---- operasional lifecycle ---------------------------------------------------------------------------------
+
+/**
+ * Dry-run (dryRun=true, default aman) atau eksekusi nyata penonaktifan akun pegawai yang resign-nya sudah berlaku.
+ * Eksekusi nyata wajib membawa daftar akun hasil pratinjau; bila himpunan saat ini berbeda, eksekusi dibatalkan
+ * agar yang dinonaktifkan persis yang dikonfirmasi operator.
+ */
+export async function processResignationsAction(
+  dryRun: boolean,
+  previewedUserIds?: string[]
+): Promise<ActionResult<LifecycleRunResultDto>> {
+  try {
+    await requirePermission("employees.lifecycle.write");
+    if (!dryRun) {
+      if (!previewedUserIds || previewedUserIds.length === 0) {
+        return { success: false, error: "Jalankan pemeriksaan (dry-run) terlebih dahulu sebelum eksekusi." };
+      }
+      const current = await employeesApi.processResignations(true);
+      const expected = [...previewedUserIds].sort().join(",");
+      const actual = current.processed.map((p) => p.userId).sort().join(",");
+      if (expected !== actual || current.remaining > 0) {
+        return {
+          success: false,
+          error: "Daftar akun terdampak telah berubah sejak pemeriksaan (atau melebihi batas satu kali jalan). Periksa ulang sebelum mengeksekusi.",
+        };
+      }
+    }
+    const result = await employeesApi.processResignations(dryRun);
+    if (!dryRun) {
+      revalidatePath("/users");
+      revalidatePath("/employees");
+    }
+    return { success: true, data: result };
+  } catch (error) {
+    unstable_rethrow(error);
     return { success: false, error: getErrorMessage(error) };
   }
 }
